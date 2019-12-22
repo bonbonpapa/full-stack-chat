@@ -35526,7 +35526,9 @@ let App = Object(react_redux__WEBPACK_IMPORTED_MODULE_1__["connect"])(mapStateTo
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 
@@ -35541,6 +35543,21 @@ class ChatForm extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
       });
     });
 
+    _defineProperty(this, "handleLogout", event => {
+      console.log("log out");
+      this.props.dispatch({
+        type: "login-off"
+      });
+    });
+
+    _defineProperty(this, "handleClearMessages", event => {
+      console.log("clear message");
+      fetch("/clearmessages", {
+        method: "POST",
+        credentials: "include"
+      });
+    });
+
     _defineProperty(this, "handleSubmit", event => {
       event.preventDefault();
       console.log("form submitted");
@@ -35550,6 +35567,10 @@ class ChatForm extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
         method: "POST",
         body: data,
         credentials: "include"
+      }); // after the message was submitted, set the state to empty.
+
+      this.setState({
+        message: ""
       });
     });
 
@@ -35558,10 +35579,17 @@ class ChatForm extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
         onSubmit: this.handleSubmit
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
         onChange: this.handleMessageChange,
-        type: "text"
+        type: "text",
+        value: this.state.message
       }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
         type: "submit"
-      })));
+      }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+        type: "button",
+        onClick: this.handleLogout
+      }, "Logout"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+        type: "button",
+        onClick: this.handleClearMessages
+      }, "Clear Messages")));
     });
 
     this.state = {
@@ -35571,7 +35599,7 @@ class ChatForm extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
 
 }
 
-/* harmony default export */ __webpack_exports__["default"] = (ChatForm);
+/* harmony default export */ __webpack_exports__["default"] = (Object(react_redux__WEBPACK_IMPORTED_MODULE_1__["connect"])()(ChatForm));
 
 /***/ }),
 
@@ -35597,25 +35625,33 @@ class UnconnectedChatMessages extends react__WEBPACK_IMPORTED_MODULE_0__["Compon
     super(...args);
 
     _defineProperty(this, "componentDidMount", () => {
-      let updateMessages = async () => {
-        let response = await fetch("/messages");
-        let responseBody = await response.text();
-        console.log("response from messages", responseBody);
-        let parsed = JSON.parse(responseBody);
-        console.log("parsed", parsed);
-        this.props.dispatch({
-          type: "set-messages",
-          messages: parsed
-        });
-      };
+      this.internvalMessage = setInterval(this.updateMessages, 500);
+    });
 
-      setInterval(updateMessages, 500);
+    _defineProperty(this, "componentWillUnmount", () => {
+      clearInterval(this.internvalMessage);
+    });
+
+    _defineProperty(this, "updateMessages", async () => {
+      let response = await fetch("/messages");
+      let responseBody = await response.text();
+      console.log("response from messages", responseBody);
+      let parsed = JSON.parse(responseBody);
+      console.log("parsed", parsed);
+      this.props.dispatch({
+        type: "set-messages",
+        messages: parsed
+      });
     });
 
     _defineProperty(this, "render", () => {
-      let msgToElement = e => react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", null, " ", e.username, ":", e.message, " ");
+      let msgToElement = (e, idx) => react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", {
+        key: e.username + idx
+      }, e.username, ":", e.message);
 
-      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", null, this.props.messages.map(msgToElement)));
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", null, this.props.messages.map((e, idx) => {
+        return msgToElement(e, idx);
+      })));
     });
   }
 
@@ -35731,7 +35767,9 @@ let Login = Object(react_redux__WEBPACK_IMPORTED_MODULE_1__["connect"])()(Unconn
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 
@@ -35753,16 +35791,38 @@ class Signup extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
       });
     });
 
-    _defineProperty(this, "handleSubmit", evt => {
+    _defineProperty(this, "handleSubmit", async evt => {
       evt.preventDefault();
       console.log("signup form submitted");
       let data = new FormData();
       data.append("username", this.state.username);
       data.append("password", this.state.password);
-      fetch("/signup", {
+      let response = await fetch("/signup", {
         method: "POST",
         body: data
       });
+      let responseBody = await response.text();
+      let body = JSON.parse(responseBody);
+      if (!body.success) alert(body.error);else {
+        response = await fetch("/login", {
+          method: "POST",
+          body: data,
+          credentials: "include"
+        });
+        responseBody = await response.text();
+        console.log("responseBody from login", responseBody);
+        body = JSON.parse(responseBody);
+        console.log("parsed body", body);
+
+        if (!body.success) {
+          alert("login failed");
+          return;
+        }
+
+        this.props.dispatch({
+          type: "login-success"
+        });
+      }
     });
 
     _defineProperty(this, "render", () => {
@@ -35787,7 +35847,7 @@ class Signup extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
 
 }
 
-/* harmony default export */ __webpack_exports__["default"] = (Signup);
+/* harmony default export */ __webpack_exports__["default"] = (Object(react_redux__WEBPACK_IMPORTED_MODULE_1__["connect"])()(Signup));
 
 /***/ }),
 
@@ -35867,6 +35927,12 @@ let reducer = (state, action) => {
   if (action.type === "login-success") {
     return { ...state,
       loggedIn: true
+    };
+  }
+
+  if (action.type === "login-off") {
+    return { ...state,
+      loggedIn: false
     };
   }
 
