@@ -35490,8 +35490,23 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 class UnconnectedApp extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
-  constructor(...args) {
-    super(...args);
+  constructor(props) {
+    super(props); // do the authentification in the constructor of the App. If the cookied existed, server return the success
+    // update the state
+
+    _defineProperty(this, "authenInitial", async () => {
+      let response = await fetch("/auth");
+      let responseBody = await response.text();
+      console.log("responseBody from login", responseBody);
+      let body = JSON.parse(responseBody);
+      console.log("parsed body", body);
+
+      if (body.success) {
+        this.props.dispatch({
+          type: "login-success"
+        });
+      }
+    });
 
     _defineProperty(this, "render", () => {
       if (this.props.lgin) {
@@ -35500,6 +35515,8 @@ class UnconnectedApp extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
 
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, "Signup"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Signup_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], null), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, "Login"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Login_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], null));
     });
+
+    this.authenInitial();
   }
 
 }
@@ -35561,8 +35578,11 @@ class ChatForm extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     _defineProperty(this, "handleSubmit", event => {
       event.preventDefault();
       console.log("form submitted");
+      const timenow = new Date();
+      console.log("Message posted time", timenow);
       let data = new FormData();
       data.append("msg", this.state.message);
+      data.append("date", timenow);
       fetch("/newmessage", {
         method: "POST",
         body: data,
@@ -35647,10 +35667,23 @@ class UnconnectedChatMessages extends react__WEBPACK_IMPORTED_MODULE_0__["Compon
     _defineProperty(this, "render", () => {
       let msgToElement = (e, idx) => react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", {
         key: e.username + idx
-      }, e.username, ":", e.message);
+      }, e.username, " Posted at ", new Date(e.msgtime).toLocaleTimeString(), " :", " ", e.message);
 
-      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", null, this.props.messages.map((e, idx) => {
+      const usertoElement = (e, idx) => react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", {
+        key: e + idx
+      }, e); //based on the returned messages list to generate the active users who have posts
+
+
+      const activeUsers = this.props.messages.reduce((acc, message) => {
+        const timestamp = new Date(message.msgtime);
+        if (Date.now() - timestamp.valueOf() <= 10000) acc[message.username] = true;
+        return acc;
+      }, {});
+      console.log(activeUsers);
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3", null, "Messages"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", null, this.props.messages.map((e, idx) => {
         return msgToElement(e, idx);
+      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3", null, "Active Users"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", null, Object.keys(activeUsers).map((e, idx) => {
+        return usertoElement(e, idx);
       })));
     });
   }

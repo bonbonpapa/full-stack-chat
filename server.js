@@ -10,6 +10,15 @@ let sessions = {};
 let messages = [];
 reloadMagic(app);
 app.use("/", express.static("build"));
+
+app.get("/auth", function(req, res) {
+  const sessionId = req.cookies.sid;
+  const user = sessions[sessionId];
+  if (user === undefined) {
+    return res.send(JSON.stringify({ success: false }));
+  }
+  res.send(JSON.stringify({ success: true }));
+});
 app.get("/messages", function(req, res) {
   const user = sessions[req.cookies["sid"]];
 
@@ -33,8 +42,9 @@ app.post("/newmessage", upload.none(), (req, res) => {
   let sessionId = req.cookies.sid;
   let username = sessions[sessionId];
   console.log("username", username);
-  let msg = req.body.msg;
-  let newMsg = { username: username, message: msg };
+  const msg = req.body.msg;
+  const time = req.body.date;
+  let newMsg = { username: username, message: msg, msgtime: time };
   console.log("new message", newMsg);
   messages = messages.concat(newMsg);
   console.log("updated messages", messages);
@@ -65,9 +75,13 @@ app.post("/login", upload.none(), (req, res) => {
     let sessionId = generateId();
     console.log("generated id", sessionId);
     sessions[sessionId] = username;
-    res.cookie("sid", sessionId);
+    res.cookie("sid", sessionId, {
+      expires: new Date(Date.now() + 900000)
+    });
+
     // to update the messages with new user log in messages
-    let newMsg = { username: username, message: "Just log in" };
+    const time = new Date();
+    let newMsg = { username: username, message: "Just log in", msgtime: time };
     console.log("new message", newMsg);
     messages = messages.concat(newMsg);
     console.log("updated messages", messages);

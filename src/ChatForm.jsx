@@ -26,8 +26,12 @@ class ChatForm extends Component {
   handleSubmit = event => {
     event.preventDefault();
     console.log("form submitted");
+    const timenow = new Date();
+
+    console.log("Message posted time", timenow);
     let data = new FormData();
     data.append("msg", this.state.message);
+    data.append("date", timenow);
     fetch("/newmessage", {
       method: "POST",
       body: data,
