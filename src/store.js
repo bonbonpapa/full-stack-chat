@@ -1,7 +1,7 @@
 import { createStore } from "redux";
 let reducer = (state, action) => {
   if (action.type === "login-success") {
-    return { ...state, loggedIn: true };
+    return { ...state, loggedIn: true, isAdmin: action.content };
   }
   if (action.type === "login-off") {
     return { ...state, loggedIn: false };
@@ -13,7 +13,7 @@ let reducer = (state, action) => {
 };
 const store = createStore(
   reducer,
-  { msgs: [], loggedIn: false },
+  { msgs: [], loggedIn: false, isAdmin: false },
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 );
 export default store;

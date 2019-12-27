@@ -1,6 +1,9 @@
 let express = require("express");
 let multer = require("multer");
-let upload = multer();
+//let upload = multer();
+let upload = multer({
+  dest: __dirname + "/uploads/"
+});
 let app = express();
 let cookieParser = require("cookie-parser");
 app.use(cookieParser());
@@ -10,6 +13,7 @@ let sessions = {};
 let messages = [];
 reloadMagic(app);
 app.use("/", express.static("build"));
+app.use("/images", express.static(__dirname + "/uploads"));
 
 app.get("/auth", function(req, res) {
   const sessionId = req.cookies.sid;
@@ -17,7 +21,7 @@ app.get("/auth", function(req, res) {
   if (user === undefined) {
     return res.send(JSON.stringify({ success: false }));
   }
-  res.send(JSON.stringify({ success: true }));
+  res.send(JSON.stringify({ success: true, isAdmin: user === "admin." }));
 });
 app.get("/messages", function(req, res) {
   const user = sessions[req.cookies["sid"]];
@@ -36,15 +40,31 @@ app.get("/messages", function(req, res) {
       })
     );
 });
-app.post("/newmessage", upload.none(), (req, res) => {
+app.post("/newmessage", upload.array("images", 9), (req, res) => {
   console.log("*** inside new message");
   console.log("body", req.body);
+
+  let files = req.files;
+  console.log("uploaded files", files);
+  let frontendPaths;
+
+  frontendPaths = files.map(file => {
+    return "/images/" + file.filename;
+  });
+  console.log(frontendPaths);
+
   let sessionId = req.cookies.sid;
   let username = sessions[sessionId];
   console.log("username", username);
   const msg = req.body.msg;
+  //const img_path = req.body.images;
   const time = req.body.date;
-  let newMsg = { username: username, message: msg, msgtime: time };
+  let newMsg = {
+    username: username,
+    message: msg,
+    msgtime: time,
+    imgs_path: frontendPaths
+  };
   console.log("new message", newMsg);
   messages = messages.concat(newMsg);
   console.log("updated messages", messages);
@@ -86,7 +106,10 @@ app.post("/login", upload.none(), (req, res) => {
     messages = messages.concat(newMsg);
     console.log("updated messages", messages);
     // send the response
-    res.send(JSON.stringify({ success: true }));
+    const isAdmin = username === "admin.";
+    if (isAdmin) console.log("The user is the admin");
+    else console.log("the user is NOT admin");
+    res.send(JSON.stringify({ success: true, isAdmin: isAdmin }));
     return;
   }
   res.send(JSON.stringify({ success: false }));

@@ -35464,6 +35464,60 @@ module.exports = function(originalModule) {
 
 /***/ }),
 
+/***/ "./src/AdminForm.jsx":
+/*!***************************!*\
+  !*** ./src/AdminForm.jsx ***!
+  \***************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+
+class AdminForm extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
+  constructor(props) {
+    super(props);
+
+    _defineProperty(this, "handleKickUser", event => {
+      this.setState({
+        kickuser: event.target.value
+      });
+    });
+
+    _defineProperty(this, "handleSubmit", event => {
+      event.preventDefault();
+    });
+
+    _defineProperty(this, "render", () => {
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("form", {
+        onSubmit: this.handleSubmit
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("label", null, "User to kick"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
+        onChange: this.handleKickUser,
+        type: "text",
+        value: this.state.kickuser
+      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
+        type: "submit"
+      })));
+    });
+
+    this.state = {
+      kickuser: ""
+    };
+  }
+
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (Object(react_redux__WEBPACK_IMPORTED_MODULE_1__["connect"])()(AdminForm));
+
+/***/ }),
+
 /***/ "./src/App.jsx":
 /*!*********************!*\
   !*** ./src/App.jsx ***!
@@ -35480,7 +35534,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Signup_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Signup.jsx */ "./src/Signup.jsx");
 /* harmony import */ var _ChatMessages_jsx__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./ChatMessages.jsx */ "./src/ChatMessages.jsx");
 /* harmony import */ var _ChatForm_jsx__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./ChatForm.jsx */ "./src/ChatForm.jsx");
+/* harmony import */ var _AdminForm_jsx__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./AdminForm.jsx */ "./src/AdminForm.jsx");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 
@@ -35503,14 +35559,17 @@ class UnconnectedApp extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
 
       if (body.success) {
         this.props.dispatch({
-          type: "login-success"
+          type: "login-success",
+          content: body.isAdmin
         });
       }
     });
 
     _defineProperty(this, "render", () => {
+      console.log("In App", this.props.isAmin ? "true" : "false");
+
       if (this.props.lgin) {
-        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_ChatMessages_jsx__WEBPACK_IMPORTED_MODULE_4__["default"], null), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_ChatForm_jsx__WEBPACK_IMPORTED_MODULE_5__["default"], null));
+        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_ChatMessages_jsx__WEBPACK_IMPORTED_MODULE_4__["default"], null), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_ChatForm_jsx__WEBPACK_IMPORTED_MODULE_5__["default"], null), this.props.isAdmin ? react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_AdminForm_jsx__WEBPACK_IMPORTED_MODULE_6__["default"], null) : "");
       }
 
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, "Signup"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Signup_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], null), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, "Login"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Login_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], null));
@@ -35523,7 +35582,8 @@ class UnconnectedApp extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
 
 let mapStateToProps = state => {
   return {
-    lgin: state.loggedIn
+    lgin: state.loggedIn,
+    isAdmin: state.isAdmin
   };
 };
 
@@ -35560,6 +35620,12 @@ class ChatForm extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
       });
     });
 
+    _defineProperty(this, "handleImgFiles", event => {
+      for (let i = 0; i < event.target.files.length; i++) this.setState({
+        images: this.state.images.slice().concat(event.target.files[i])
+      });
+    });
+
     _defineProperty(this, "handleLogout", event => {
       console.log("log out");
       this.props.dispatch({
@@ -35582,7 +35648,13 @@ class ChatForm extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
       console.log("Message posted time", timenow);
       let data = new FormData();
       data.append("msg", this.state.message);
-      data.append("date", timenow);
+      data.append("date", timenow); // https://stackoverflow.com/questions/54269650/why-formdata-does-not-work-with-multiple-files
+      // data.append("images", this.state.fileList);
+
+      for (let i = 0; i < this.state.images.length; i++) {
+        data.append("images", this.state.images[i]);
+      }
+
       fetch("/newmessage", {
         method: "POST",
         body: data,
@@ -35590,18 +35662,24 @@ class ChatForm extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
       }); // after the message was submitted, set the state to empty.
 
       this.setState({
-        message: ""
+        message: "",
+        images: []
       });
     });
 
     _defineProperty(this, "render", () => {
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("form", {
         onSubmit: this.handleSubmit
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("label", null, "Text Message"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
         onChange: this.handleMessageChange,
         type: "text",
         value: this.state.message
-      }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
+      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("label", null, "Image Files"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
+        type: "file",
+        name: "images",
+        onChange: this.handleImgFiles,
+        multiple: true
+      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
         type: "submit"
       }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
         type: "button",
@@ -35613,7 +35691,8 @@ class ChatForm extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     });
 
     this.state = {
-      message: ""
+      message: "",
+      images: []
     };
   }
 
@@ -35667,7 +35746,10 @@ class UnconnectedChatMessages extends react__WEBPACK_IMPORTED_MODULE_0__["Compon
     _defineProperty(this, "render", () => {
       let msgToElement = (e, idx) => react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", {
         key: e.username + idx
-      }, e.username, " Posted at ", new Date(e.msgtime).toLocaleTimeString(), " :", " ", e.message);
+      }, e.username, " Posted at ", new Date(e.msgtime).toLocaleTimeString(), " :", e.message, e.imgs_path === undefined ? "" : react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
+        src: e.imgs_path[0],
+        height: "100px"
+      })));
 
       const usertoElement = (e, idx) => react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", {
         key: e + idx
@@ -35758,7 +35840,8 @@ class UnconnectedLogin extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
       }
 
       this.props.dispatch({
-        type: "login-success"
+        type: "login-success",
+        content: body.isAdmin
       });
     });
 
@@ -35959,7 +36042,8 @@ __webpack_require__.r(__webpack_exports__);
 let reducer = (state, action) => {
   if (action.type === "login-success") {
     return { ...state,
-      loggedIn: true
+      loggedIn: true,
+      isAdmin: action.content
     };
   }
 
@@ -35980,7 +36064,8 @@ let reducer = (state, action) => {
 
 const store = Object(redux__WEBPACK_IMPORTED_MODULE_0__["createStore"])(reducer, {
   msgs: [],
-  loggedIn: false
+  loggedIn: false,
+  isAdmin: false
 }, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 /* harmony default export */ __webpack_exports__["default"] = (store);
 
