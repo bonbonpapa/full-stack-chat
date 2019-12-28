@@ -29,14 +29,19 @@ app.get("/messages", function(req, res) {
   if (user !== undefined) {
     const aLength = messages.length;
     if (aLength > 20) {
-      res.send(JSON.stringify(messages.slice(aLength - 20)));
+      res.send(
+        JSON.stringify({
+          success: true,
+          messages: messages.slice(aLength - 20)
+        })
+      );
       return;
-    } else res.send(JSON.stringify(messages));
+    } else res.send(JSON.stringify({ success: true, messages: messages }));
   } else
     res.send(
       JSON.stringify({
         success: false,
-        error: "no valid username found, login please"
+        messages: []
       })
     );
 });
@@ -117,6 +122,30 @@ app.post("/login", upload.none(), (req, res) => {
 let generateId = () => {
   return "" + Math.floor(Math.random() * 100000000);
 };
+
+app.post("/kickuser", upload.none(), (req, res) => {
+  console.log("**** I'm in the kick off user endpoint");
+  console.log("this is the body", req.body);
+  const usertokick = req.body.usertokick;
+  console.log("sessions before delete", sessions);
+  // to delete the usertokick property from the object sessions, "sid": usertokick
+  const sidtokick = Object.keys(sessions)[
+    Object.values(sessions).indexOf(usertokick)
+  ];
+  delete sessions[sidtokick];
+  console.log("sessions after kickoff", sessions);
+  // to update the messages with new user kick off message
+  const time = new Date();
+  let newMsg = {
+    username: usertokick,
+    message: "Just kick off",
+    msgtime: time
+  };
+  console.log("new message for the kick off information", newMsg);
+  messages = messages.concat(newMsg);
+
+  res.send(JSON.stringify({ success: true }));
+});
 app.post("/signup", upload.none(), (req, res) => {
   console.log("**** I'm in the signup endpoint");
   console.log("this is the body", req.body);

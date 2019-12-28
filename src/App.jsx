@@ -29,7 +29,10 @@ class UnconnectedApp extends Component {
     }
   };
   render = () => {
-    console.log("In App", this.props.isAmin ? "true" : "false");
+    console.log("In App");
+    if (this.props.isAdmin) console.log("this is the admin user");
+    else console.log("this is NOT admin user");
+
     if (this.props.lgin) {
       return (
         <div>

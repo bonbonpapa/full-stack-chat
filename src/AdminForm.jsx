@@ -10,8 +10,23 @@ class AdminForm extends Component {
     this.setState({ kickuser: event.target.value });
   };
 
-  handleSubmit = event => {
+  handleSubmit = async event => {
     event.preventDefault();
+    const usertokick = window.prompt("who do you want to kick");
+    this.setState({ kickuser: usertokick });
+    console.log(this.state);
+
+    let data = new FormData();
+    data.append("usertokick", this.state.kickuser);
+    let response = await fetch("/kickuser", {
+      method: "POST",
+      body: data,
+      credentials: "include"
+    });
+    let responseBody = await response.text();
+    console.log("response Body from kick off users", responseBody);
+    let body = JSON.parse(responseBody);
+    console.log("parsed body", body);
   };
   render = () => {
     return (
@@ -31,5 +46,7 @@ class AdminForm extends Component {
     );
   };
 }
-
-export default connect()(AdminForm);
+let mapStateToProps = state => {
+  return { lgin: state.loggedIn, isAdmin: state.isAdmin };
+};
+export default connect(mapStateToProps)(AdminForm);

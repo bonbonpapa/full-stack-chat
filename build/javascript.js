@@ -35491,8 +35491,24 @@ class AdminForm extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
       });
     });
 
-    _defineProperty(this, "handleSubmit", event => {
+    _defineProperty(this, "handleSubmit", async event => {
       event.preventDefault();
+      const usertokick = window.prompt("who do you want to kick");
+      this.setState({
+        kickuser: usertokick
+      });
+      console.log(this.state);
+      let data = new FormData();
+      data.append("usertokick", this.state.kickuser);
+      let response = await fetch("/kickuser", {
+        method: "POST",
+        body: data,
+        credentials: "include"
+      });
+      let responseBody = await response.text();
+      console.log("response Body from kick off users", responseBody);
+      let body = JSON.parse(responseBody);
+      console.log("parsed body", body);
     });
 
     _defineProperty(this, "render", () => {
@@ -35514,7 +35530,14 @@ class AdminForm extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
 
 }
 
-/* harmony default export */ __webpack_exports__["default"] = (Object(react_redux__WEBPACK_IMPORTED_MODULE_1__["connect"])()(AdminForm));
+let mapStateToProps = state => {
+  return {
+    lgin: state.loggedIn,
+    isAdmin: state.isAdmin
+  };
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (Object(react_redux__WEBPACK_IMPORTED_MODULE_1__["connect"])(mapStateToProps)(AdminForm));
 
 /***/ }),
 
@@ -35566,7 +35589,8 @@ class UnconnectedApp extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     });
 
     _defineProperty(this, "render", () => {
-      console.log("In App", this.props.isAmin ? "true" : "false");
+      console.log("In App");
+      if (this.props.isAdmin) console.log("this is the admin user");else console.log("this is NOT admin user");
 
       if (this.props.lgin) {
         return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_ChatMessages_jsx__WEBPACK_IMPORTED_MODULE_4__["default"], null), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_ChatForm_jsx__WEBPACK_IMPORTED_MODULE_5__["default"], null), this.props.isAdmin ? react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_AdminForm_jsx__WEBPACK_IMPORTED_MODULE_6__["default"], null) : "");
@@ -35737,16 +35761,23 @@ class UnconnectedChatMessages extends react__WEBPACK_IMPORTED_MODULE_0__["Compon
       console.log("response from messages", responseBody);
       let parsed = JSON.parse(responseBody);
       console.log("parsed", parsed);
-      this.props.dispatch({
-        type: "set-messages",
-        messages: parsed
-      });
+
+      if (parsed.success) {
+        this.props.dispatch({
+          type: "set-messages",
+          messages: parsed.messages
+        });
+      } else {
+        this.props.dispatch({
+          type: "login-off"
+        });
+      }
     });
 
     _defineProperty(this, "render", () => {
       let msgToElement = (e, idx) => react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", {
         key: e.username + idx
-      }, e.username, " Posted at ", new Date(e.msgtime).toLocaleTimeString(), " :", e.message, e.imgs_path === undefined ? "" : react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
+      }, e.username, " Posted at ", new Date(e.msgtime).toLocaleTimeString(), " :", e.message, e.imgs_path === undefined || e.imgs_path.length === 0 ? "" : react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
         src: e.imgs_path[0],
         height: "100px"
       })));
@@ -35833,6 +35864,7 @@ class UnconnectedLogin extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
       console.log("responseBody from login", responseBody);
       let body = JSON.parse(responseBody);
       console.log("parsed body", body);
+      const isAdmin = body.isAdmin;
 
       if (!body.success) {
         alert("login failed");
@@ -35841,7 +35873,7 @@ class UnconnectedLogin extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
 
       this.props.dispatch({
         type: "login-success",
-        content: body.isAdmin
+        content: isAdmin
       });
     });
 

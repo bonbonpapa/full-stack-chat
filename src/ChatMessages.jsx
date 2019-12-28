@@ -13,17 +13,23 @@ class UnconnectedChatMessages extends Component {
     console.log("response from messages", responseBody);
     let parsed = JSON.parse(responseBody);
     console.log("parsed", parsed);
-    this.props.dispatch({
-      type: "set-messages",
-      messages: parsed
-    });
+    if (parsed.success) {
+      this.props.dispatch({
+        type: "set-messages",
+        messages: parsed.messages
+      });
+    } else {
+      this.props.dispatch({
+        type: "login-off"
+      });
+    }
   };
   render = () => {
     let msgToElement = (e, idx) => (
       <li key={e.username + idx}>
         {e.username} Posted at {new Date(e.msgtime).toLocaleTimeString()} :
         {e.message}
-        {e.imgs_path === undefined ? (
+        {e.imgs_path === undefined || e.imgs_path.length === 0 ? (
           ""
         ) : (
           <div>
@@ -35,6 +41,7 @@ class UnconnectedChatMessages extends Component {
     const usertoElement = (e, idx) => <li key={e + idx}>{e}</li>;
 
     //based on the returned messages list to generate the active users who have posts
+
     const activeUsers = this.props.messages.reduce((acc, message) => {
       const timestamp = new Date(message.msgtime);
       if (Date.now() - timestamp.valueOf() <= 10000)
