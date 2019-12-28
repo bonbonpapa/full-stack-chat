@@ -35599,7 +35599,9 @@ class UnconnectedApp extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, "Signup"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Signup_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], null), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, "Login"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Login_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], null));
     });
 
-    this.authenInitial();
+    this.authenInitial(); // Question to ask:
+    // in the constuctor, the auth will be complted so that isAdmin will be updated to true for admin user
+    // but actually, the isAdmin state not updated in the first render, only when the manual reload the page, the state will be udpdated.
   }
 
 }
@@ -35691,6 +35693,41 @@ class ChatForm extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
       });
     });
 
+    _defineProperty(this, "handleMessageRecipient", event => {
+      console.log("new recipient", event.target.value);
+      this.setState({
+        recipient: event.target.value
+      });
+    });
+
+    _defineProperty(this, "handleDirectMessage", event => {
+      console.log("new direct message", event.target.value);
+      this.setState({
+        directmessage: event.target.value
+      });
+    });
+
+    _defineProperty(this, "handleSubmitDirectMessage", event => {
+      event.preventDefault();
+      console.log("form submitted for direct message");
+      const timenow = new Date();
+      console.log("Message posted time", timenow);
+      let data = new FormData();
+      data.append("msg", this.state.directmessage);
+      data.append("recipient", this.state.recipient);
+      data.append("timestamp", timenow);
+      fetch("/direct-message", {
+        method: "POST",
+        body: data,
+        credentials: "include"
+      }); // after the message was submitted, set the state to empty.
+
+      this.setState({
+        directmessage: "",
+        recipient: ""
+      });
+    });
+
     _defineProperty(this, "render", () => {
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("form", {
         onSubmit: this.handleSubmit
@@ -35711,12 +35748,26 @@ class ChatForm extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
       }, "Logout"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
         type: "button",
         onClick: this.handleClearMessages
-      }, "Clear Messages")));
+      }, "Clear Messages")), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("form", {
+        onSubmit: this.handleSubmitDirectMessage
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("label", null, "Message to"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
+        onChange: this.handleMessageRecipient,
+        type: "text",
+        value: this.state.recipient
+      }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
+        onChange: this.handleDirectMessage,
+        type: "text",
+        value: this.state.directmessage
+      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
+        type: "submit"
+      })));
     });
 
     this.state = {
       message: "",
-      images: []
+      images: [],
+      recipient: "",
+      directmessage: ""
     };
   }
 
@@ -35765,7 +35816,8 @@ class UnconnectedChatMessages extends react__WEBPACK_IMPORTED_MODULE_0__["Compon
       if (parsed.success) {
         this.props.dispatch({
           type: "set-messages",
-          messages: parsed.messages
+          messages: parsed.messages,
+          directMessages: parsed.directMessages
         });
       } else {
         this.props.dispatch({
@@ -35795,6 +35847,8 @@ class UnconnectedChatMessages extends react__WEBPACK_IMPORTED_MODULE_0__["Compon
       console.log(activeUsers);
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3", null, "Messages"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", null, this.props.messages.map((e, idx) => {
         return msgToElement(e, idx);
+      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3", null, "Direct Messages"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", null, this.props.directMessages.map((e, idx) => {
+        return msgToElement(e, idx);
       })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3", null, "Active Users"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", null, Object.keys(activeUsers).map((e, idx) => {
         return usertoElement(e, idx);
       })));
@@ -35805,7 +35859,8 @@ class UnconnectedChatMessages extends react__WEBPACK_IMPORTED_MODULE_0__["Compon
 
 let mapStateToProps = state => {
   return {
-    messages: state.msgs
+    messages: state.msgs,
+    directMessages: state.directMessages
   };
 };
 
@@ -36087,7 +36142,8 @@ let reducer = (state, action) => {
 
   if (action.type === "set-messages") {
     return { ...state,
-      msgs: action.messages
+      msgs: action.messages,
+      directMessages: action.directMessages
     };
   }
 
@@ -36097,7 +36153,8 @@ let reducer = (state, action) => {
 const store = Object(redux__WEBPACK_IMPORTED_MODULE_0__["createStore"])(reducer, {
   msgs: [],
   loggedIn: false,
-  isAdmin: false
+  isAdmin: false,
+  directMessages: []
 }, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 /* harmony default export */ __webpack_exports__["default"] = (store);
 

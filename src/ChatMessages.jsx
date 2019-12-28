@@ -16,7 +16,8 @@ class UnconnectedChatMessages extends Component {
     if (parsed.success) {
       this.props.dispatch({
         type: "set-messages",
-        messages: parsed.messages
+        messages: parsed.messages,
+        directMessages: parsed.directMessages
       });
     } else {
       this.props.dispatch({
@@ -57,6 +58,12 @@ class UnconnectedChatMessages extends Component {
             return msgToElement(e, idx);
           })}
         </ul>
+        <h3>Direct Messages</h3>
+        <ul>
+          {this.props.directMessages.map((e, idx) => {
+            return msgToElement(e, idx);
+          })}
+        </ul>
         <h3>Active Users</h3>
         <ul>
           {Object.keys(activeUsers).map((e, idx) => {
@@ -69,7 +76,8 @@ class UnconnectedChatMessages extends Component {
 }
 let mapStateToProps = state => {
   return {
-    messages: state.msgs
+    messages: state.msgs,
+    directMessages: state.directMessages
   };
 };
 let Chat = connect(mapStateToProps)(UnconnectedChatMessages);

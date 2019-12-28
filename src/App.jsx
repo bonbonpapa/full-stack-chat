@@ -13,6 +13,9 @@ class UnconnectedApp extends Component {
     // do the authentification in the constructor of the App. If the cookied existed, server return the success
     // update the state
     this.authenInitial();
+    // Question to ask:
+    // in the constuctor, the auth will be complted so that isAdmin will be updated to true for admin user
+    // but actually, the isAdmin state not updated in the first render, only when the manual reload the page, the state will be udpdated.
   }
 
   authenInitial = async () => {

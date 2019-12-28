@@ -11,6 +11,7 @@ let reloadMagic = require("./reload-magic.js");
 let passwords = {};
 let sessions = {};
 let messages = [];
+const directMessages = {};
 reloadMagic(app);
 app.use("/", express.static("build"));
 app.use("/images", express.static(__dirname + "/uploads"));
@@ -32,11 +33,19 @@ app.get("/messages", function(req, res) {
       res.send(
         JSON.stringify({
           success: true,
-          messages: messages.slice(aLength - 20)
+          messages: messages.slice(aLength - 20),
+          directMessages: directMessages[user]
         })
       );
       return;
-    } else res.send(JSON.stringify({ success: true, messages: messages }));
+    } else
+      res.send(
+        JSON.stringify({
+          success: true,
+          messages: messages,
+          directMessages: directMessages[user]
+        })
+      );
   } else
     res.send(
       JSON.stringify({
@@ -62,7 +71,7 @@ app.post("/newmessage", upload.array("images", 9), (req, res) => {
   let username = sessions[sessionId];
   console.log("username", username);
   const msg = req.body.msg;
-  //const img_path = req.body.images;
+
   const time = req.body.date;
   let newMsg = {
     username: username,
@@ -75,6 +84,25 @@ app.post("/newmessage", upload.array("images", 9), (req, res) => {
   console.log("updated messages", messages);
   res.send(JSON.stringify({ success: true }));
 });
+
+app.post("/direct-message", upload.none(), (req, res) => {
+  console.log("Inside direct message");
+  console.log("body", req.body);
+
+  const sessionId = req.cookies.sid;
+  const username = sessions[sessionId];
+  const recipient = req.body.recipient;
+
+  const newMsg = {
+    username: username,
+    message: req.body.msg,
+    msgtime: req.body.timestamp,
+    imgs_path: []
+  };
+  directMessages[recipient].push(newMsg);
+  res.send(JSON.stringify({ success: true }));
+});
+
 app.post("/clearmessages", upload.none(), (req, res) => {
   console.log("**** I'm in the signup endpoint");
   console.log("this is the body", req.body);
@@ -156,6 +184,9 @@ app.post("/signup", upload.none(), (req, res) => {
     return;
   }
   passwords[username] = enteredPassword;
+
+  // need to initialize the direct messages for this particular user as this is user specific
+  directMessages[username] = [];
 
   console.log("passwords object", passwords);
   res.send(JSON.stringify({ success: true }));

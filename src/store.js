@@ -7,13 +7,17 @@ let reducer = (state, action) => {
     return { ...state, loggedIn: false };
   }
   if (action.type === "set-messages") {
-    return { ...state, msgs: action.messages };
+    return {
+      ...state,
+      msgs: action.messages,
+      directMessages: action.directMessages
+    };
   }
   return state;
 };
 const store = createStore(
   reducer,
-  { msgs: [], loggedIn: false, isAdmin: false },
+  { msgs: [], loggedIn: false, isAdmin: false, directMessages: [] },
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 );
 export default store;

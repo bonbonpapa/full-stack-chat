@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 class ChatForm extends Component {
   constructor(props) {
     super(props);
-    this.state = { message: "", images: [] };
+    this.state = { message: "", images: [], recipient: "", directmessage: "" };
   }
   handleMessageChange = event => {
     console.log("new message", event.target.value);
@@ -51,6 +51,34 @@ class ChatForm extends Component {
     // after the message was submitted, set the state to empty.
     this.setState({ message: "", images: [] });
   };
+
+  handleMessageRecipient = event => {
+    console.log("new recipient", event.target.value);
+    this.setState({ recipient: event.target.value });
+  };
+  handleDirectMessage = event => {
+    console.log("new direct message", event.target.value);
+    this.setState({ directmessage: event.target.value });
+  };
+  handleSubmitDirectMessage = event => {
+    event.preventDefault();
+    console.log("form submitted for direct message");
+    const timenow = new Date();
+    console.log("Message posted time", timenow);
+
+    let data = new FormData();
+    data.append("msg", this.state.directmessage);
+    data.append("recipient", this.state.recipient);
+    data.append("timestamp", timenow);
+
+    fetch("/direct-message", {
+      method: "POST",
+      body: data,
+      credentials: "include"
+    });
+    // after the message was submitted, set the state to empty.
+    this.setState({ directmessage: "", recipient: "" });
+  };
   render = () => {
     return (
       <div>
@@ -79,6 +107,22 @@ class ChatForm extends Component {
           <button type="button" onClick={this.handleClearMessages}>
             Clear Messages
           </button>
+        </form>
+        <form onSubmit={this.handleSubmitDirectMessage}>
+          <div>
+            <label>Message to</label>
+            <input
+              onChange={this.handleMessageRecipient}
+              type="text"
+              value={this.state.recipient}
+            />
+            <input
+              onChange={this.handleDirectMessage}
+              type="text"
+              value={this.state.directmessage}
+            />
+          </div>
+          <input type="submit" />
         </form>
       </div>
     );
