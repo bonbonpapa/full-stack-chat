@@ -10,7 +10,7 @@ app.use(cookieParser());
 let reloadMagic = require("./reload-magic.js");
 let passwords = {};
 let sessions = {};
-let messages = [];
+let messages = {};
 const directMessages = {};
 reloadMagic(app);
 app.use("/", express.static("build"));
@@ -26,6 +26,8 @@ app.get("/auth", function(req, res) {
 });
 app.get("/messages", function(req, res) {
   const user = sessions[req.cookies["sid"]];
+  const roomName = req.query.roomName;
+  console.log("Messages updates query from", roomName);
 
   if (user !== undefined) {
     const aLength = messages.length;
@@ -33,8 +35,8 @@ app.get("/messages", function(req, res) {
       res.send(
         JSON.stringify({
           success: true,
-          messages: messages.slice(aLength - 20),
-          directMessages: directMessages[user]
+          messages: messages[roomName].slice(aLength - 20),
+          directMessages: directMessages[roomName][user]
         })
       );
       return;
@@ -42,8 +44,8 @@ app.get("/messages", function(req, res) {
       res.send(
         JSON.stringify({
           success: true,
-          messages: messages,
-          directMessages: directMessages[user]
+          messages: messages[roomName],
+          directMessages: directMessages[roomName][user]
         })
       );
   } else
@@ -80,7 +82,14 @@ app.post("/newmessage", upload.array("images", 9), (req, res) => {
     imgs_path: frontendPaths
   };
   console.log("new message", newMsg);
-  messages = messages.concat(newMsg);
+  let room = req.body.roomName;
+  messages[room] = messages[room].concat(newMsg);
+  // let rooms = Object.keys(messages);
+  // for (let i = 0; i < rooms.length; i++) {
+  //   let room = rooms[i];
+  //   messages[room] = messages[room].concat(newMsg);
+  // }
+  //messages = messages.concat(newMsg);
   console.log("updated messages", messages);
   res.send(JSON.stringify({ success: true }));
 });
@@ -133,11 +142,18 @@ app.post("/login", upload.none(), (req, res) => {
     });
 
     // to update the messages with new user log in messages
-    const time = new Date();
-    let newMsg = { username: username, message: "Just log in", msgtime: time };
-    console.log("new message", newMsg);
-    messages = messages.concat(newMsg);
-    console.log("updated messages", messages);
+    // const time = new Date();
+    // let newMsg = { username: username, message: "Just log in", msgtime: time };
+    // console.log("new message", newMsg);
+
+    // let rooms = Object.keys(messages);
+    // for (let i = 0; i < rooms.length; i++) {
+    //   let room = rooms[i];
+    //   messages[room] = message[room].concat(newMsg);
+    // }
+
+    // //messages = messages.concat(newMsg);
+    // console.log("updated messages", messages);
     // send the response
     const isAdmin = username === "admin.";
     if (isAdmin) console.log("The user is the admin");
@@ -186,9 +202,33 @@ app.post("/signup", upload.none(), (req, res) => {
   passwords[username] = enteredPassword;
 
   // need to initialize the direct messages for this particular user as this is user specific
-  directMessages[username] = [];
+  let rooms = Object.keys(directMessages);
+  for (let i = 0; i < rooms.length; i++) {
+    let roomName = room[i];
+    directMessages[roomName] = [];
+  }
 
   console.log("passwords object", passwords);
+  res.send(JSON.stringify({ success: true }));
+});
+app.post("/newroom", upload.none(), (req, res) => {
+  console.log("**** I'm in the new chat room endpoint");
+  console.log("this is the body", req.body);
+  let sessionId = req.cookies.sid;
+  let username = sessions[sessionId];
+  console.log("username", username);
+  const roomName = req.body.roomName;
+  console.log("Room Name ", roomName);
+
+  // need to initialize the direct messages for this particular user as this is user specific
+  directMessages[roomName] = {};
+  let users = Object.keys(passwords);
+  for (let i = 0; i < users.length; i++) {
+    let user = users[i];
+    directMessages[roomName][user] = [];
+  }
+  messages[roomName] = [];
+
   res.send(JSON.stringify({ success: true }));
 });
 

@@ -38,6 +38,7 @@ class ChatForm extends Component {
     let data = new FormData();
     data.append("msg", this.state.message);
     data.append("date", timenow);
+    data.append("roomName", this.props.roomName);
     // https://stackoverflow.com/questions/54269650/why-formdata-does-not-work-with-multiple-files
     // data.append("images", this.state.fileList);
     for (let i = 0; i < this.state.images.length; i++) {

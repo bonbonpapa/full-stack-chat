@@ -1,6 +1,9 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 class UnconnectedChatMessages extends Component {
+  constructor(props) {
+    super(props);
+  }
   componentDidMount = () => {
     this.internvalMessage = setInterval(this.updateMessages, 500);
   };
@@ -8,7 +11,7 @@ class UnconnectedChatMessages extends Component {
     clearInterval(this.internvalMessage);
   };
   updateMessages = async () => {
-    let response = await fetch("/messages");
+    let response = await fetch("/messages?roomName=" + this.props.roomName);
     let responseBody = await response.text();
     console.log("response from messages", responseBody);
     let parsed = JSON.parse(responseBody);
@@ -16,6 +19,7 @@ class UnconnectedChatMessages extends Component {
     if (parsed.success) {
       this.props.dispatch({
         type: "set-messages",
+        roomName: this.props.roomName,
         messages: parsed.messages,
         directMessages: parsed.directMessages
       });
@@ -43,24 +47,38 @@ class UnconnectedChatMessages extends Component {
 
     //based on the returned messages list to generate the active users who have posts
 
-    const activeUsers = this.props.messages.reduce((acc, message) => {
+    console.log(this.props.messages);
+    let roomMessages = this.props.messages[this.props.roomName];
+    let roomdirectMessages = this.props.directMessages[this.props.roomName];
+
+    if (roomMessages === undefined) {
+      console.log("the messages is empty");
+      roomMessages = [];
+    }
+    if (roomdirectMessages === undefined) {
+      console.log("direct messages are empty");
+      roomdirectMessages = [];
+    }
+
+    const activeUsers = roomMessages.reduce((acc, message) => {
       const timestamp = new Date(message.msgtime);
       if (Date.now() - timestamp.valueOf() <= 10000)
         acc[message.username] = true;
       return acc;
     }, {});
     console.log(activeUsers);
+
     return (
       <div>
         <h3>Messages</h3>
         <ul>
-          {this.props.messages.map((e, idx) => {
+          {roomMessages.map((e, idx) => {
             return msgToElement(e, idx);
           })}
         </ul>
         <h3>Direct Messages</h3>
         <ul>
-          {this.props.directMessages.map((e, idx) => {
+          {roomdirectMessages.map((e, idx) => {
             return msgToElement(e, idx);
           })}
         </ul>

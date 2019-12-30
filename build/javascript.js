@@ -35555,12 +35555,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
 /* harmony import */ var _Login_jsx__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Login.jsx */ "./src/Login.jsx");
 /* harmony import */ var _Signup_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Signup.jsx */ "./src/Signup.jsx");
-/* harmony import */ var _ChatMessages_jsx__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./ChatMessages.jsx */ "./src/ChatMessages.jsx");
-/* harmony import */ var _ChatForm_jsx__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./ChatForm.jsx */ "./src/ChatForm.jsx");
-/* harmony import */ var _AdminForm_jsx__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./AdminForm.jsx */ "./src/AdminForm.jsx");
+/* harmony import */ var _ChatRoom_jsx__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./ChatRoom.jsx */ "./src/ChatRoom.jsx");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
 
 
 
@@ -35570,8 +35566,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 class UnconnectedApp extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
   constructor(props) {
-    super(props); // do the authentification in the constructor of the App. If the cookied existed, server return the success
-    // update the state
+    super(props);
 
     _defineProperty(this, "authenInitial", async () => {
       let response = await fetch("/auth");
@@ -35588,16 +35583,29 @@ class UnconnectedApp extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
       }
     });
 
+    _defineProperty(this, "handleAddChatRoom", () => {
+      this.setState({
+        ChatRooms: this.state.ChatRooms.concat(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_ChatRoom_jsx__WEBPACK_IMPORTED_MODULE_4__["default"], null))
+      });
+    });
+
     _defineProperty(this, "render", () => {
       console.log("In App");
       if (this.props.isAdmin) console.log("this is the admin user");else console.log("this is NOT admin user");
 
       if (this.props.lgin) {
-        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_ChatMessages_jsx__WEBPACK_IMPORTED_MODULE_4__["default"], null), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_ChatForm_jsx__WEBPACK_IMPORTED_MODULE_5__["default"], null), this.props.isAdmin ? react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_AdminForm_jsx__WEBPACK_IMPORTED_MODULE_6__["default"], null) : "");
+        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, this.state.ChatRooms, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+          onClick: this.handleAddChatRoom
+        }, "Create Chat Room"));
       }
 
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, "Signup"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Signup_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], null), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, "Login"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Login_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], null));
     });
+
+    this.state = {
+      ChatRooms: [react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_ChatRoom_jsx__WEBPACK_IMPORTED_MODULE_4__["default"], null)]
+    }; // do the authentification in the constructor of the App. If the cookied existed, server return the success
+    // update the state
 
     this.authenInitial(); // Question to ask:
     // in the constuctor, the auth will be complted so that isAdmin will be updated to true for admin user
@@ -35674,7 +35682,8 @@ class ChatForm extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
       console.log("Message posted time", timenow);
       let data = new FormData();
       data.append("msg", this.state.message);
-      data.append("date", timenow); // https://stackoverflow.com/questions/54269650/why-formdata-does-not-work-with-multiple-files
+      data.append("date", timenow);
+      data.append("roomName", this.props.roomName); // https://stackoverflow.com/questions/54269650/why-formdata-does-not-work-with-multiple-files
       // data.append("images", this.state.fileList);
 
       for (let i = 0; i < this.state.images.length; i++) {
@@ -35795,8 +35804,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 class UnconnectedChatMessages extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
-  constructor(...args) {
-    super(...args);
+  constructor(props) {
+    super(props);
 
     _defineProperty(this, "componentDidMount", () => {
       this.internvalMessage = setInterval(this.updateMessages, 500);
@@ -35807,7 +35816,7 @@ class UnconnectedChatMessages extends react__WEBPACK_IMPORTED_MODULE_0__["Compon
     });
 
     _defineProperty(this, "updateMessages", async () => {
-      let response = await fetch("/messages");
+      let response = await fetch("/messages?roomName=" + this.props.roomName);
       let responseBody = await response.text();
       console.log("response from messages", responseBody);
       let parsed = JSON.parse(responseBody);
@@ -35816,6 +35825,7 @@ class UnconnectedChatMessages extends react__WEBPACK_IMPORTED_MODULE_0__["Compon
       if (parsed.success) {
         this.props.dispatch({
           type: "set-messages",
+          roomName: this.props.roomName,
           messages: parsed.messages,
           directMessages: parsed.directMessages
         });
@@ -35839,15 +35849,29 @@ class UnconnectedChatMessages extends react__WEBPACK_IMPORTED_MODULE_0__["Compon
       }, e); //based on the returned messages list to generate the active users who have posts
 
 
-      const activeUsers = this.props.messages.reduce((acc, message) => {
+      console.log(this.props.messages);
+      let roomMessages = this.props.messages[this.props.roomName];
+      let roomdirectMessages = this.props.directMessages[this.props.roomName];
+
+      if (roomMessages === undefined) {
+        console.log("the messages is empty");
+        roomMessages = [];
+      }
+
+      if (roomdirectMessages === undefined) {
+        console.log("direct messages are empty");
+        roomdirectMessages = [];
+      }
+
+      const activeUsers = roomMessages.reduce((acc, message) => {
         const timestamp = new Date(message.msgtime);
         if (Date.now() - timestamp.valueOf() <= 10000) acc[message.username] = true;
         return acc;
       }, {});
       console.log(activeUsers);
-      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3", null, "Messages"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", null, this.props.messages.map((e, idx) => {
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3", null, "Messages"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", null, roomMessages.map((e, idx) => {
         return msgToElement(e, idx);
-      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3", null, "Direct Messages"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", null, this.props.directMessages.map((e, idx) => {
+      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3", null, "Direct Messages"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", null, roomdirectMessages.map((e, idx) => {
         return msgToElement(e, idx);
       })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3", null, "Active Users"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", null, Object.keys(activeUsers).map((e, idx) => {
         return usertoElement(e, idx);
@@ -35866,6 +35890,94 @@ let mapStateToProps = state => {
 
 let Chat = Object(react_redux__WEBPACK_IMPORTED_MODULE_1__["connect"])(mapStateToProps)(UnconnectedChatMessages);
 /* harmony default export */ __webpack_exports__["default"] = (Chat);
+
+/***/ }),
+
+/***/ "./src/ChatRoom.jsx":
+/*!**************************!*\
+  !*** ./src/ChatRoom.jsx ***!
+  \**************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+/* harmony import */ var _ChatMessages_jsx__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ChatMessages.jsx */ "./src/ChatMessages.jsx");
+/* harmony import */ var _ChatForm_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ChatForm.jsx */ "./src/ChatForm.jsx");
+/* harmony import */ var _AdminForm_jsx__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./AdminForm.jsx */ "./src/AdminForm.jsx");
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+
+
+
+
+class ChatRoom extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
+  constructor(props) {
+    super(props);
+
+    _defineProperty(this, "componentDidMount", () => {
+      this.InitChatRoom();
+    });
+
+    _defineProperty(this, "InitChatRoom", async () => {
+      let data = new FormData();
+      data.append("roomName", this.state.roomName);
+      let response = await fetch("/newroom", {
+        method: "POST",
+        body: data,
+        credentials: "include"
+      });
+      let responseBody = await response.text();
+      console.log("response from new chat room", responseBody);
+      let parsed = JSON.parse(responseBody);
+      console.log("parsed", parsed);
+
+      if (parsed.success) {
+        this.props.dispatch({
+          type: "init-room",
+          roomName: this.state.roomName
+        });
+      }
+    });
+
+    _defineProperty(this, "render", () => {
+      console.log("In Chat Room Components");
+      if (this.props.isAdmin) console.log("this is the admin user");else console.log("this is NOT admin user");
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_ChatMessages_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
+        roomName: this.state.roomName
+      }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_ChatForm_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], {
+        roomName: this.state.roomName
+      }), this.props.isAdmin ? react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_AdminForm_jsx__WEBPACK_IMPORTED_MODULE_4__["default"], {
+        roomName: this.state.roomName
+      }) : "");
+    });
+
+    console.log("Instantiating");
+    console.log("Before the first render");
+    let nameEntered = window.prompt("What is the name of Chat Room?");
+    console.log("This is what the user entered", nameEntered);
+    this.state = {
+      roomName: nameEntered
+    };
+    console.log("Init of the room state with", this.state.roomName);
+    console.log("Instantiating completed");
+  }
+
+}
+
+let mapStateToProps = state => {
+  return {
+    lgin: state.loggedIn,
+    isAdmin: state.isAdmin
+  };
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (Object(react_redux__WEBPACK_IMPORTED_MODULE_1__["connect"])(mapStateToProps)(ChatRoom));
 
 /***/ }),
 
@@ -36140,10 +36252,28 @@ let reducer = (state, action) => {
     };
   }
 
+  if (action.type === "init-room") {
+    return { ...state,
+      msgs: { ...state.msgs,
+        [action.roomName]: []
+      },
+      directMessages: { ...state.directMessages,
+        [action.roomName]: []
+      }
+    }; //In ES6, you can do like this.
+    // var key = "name";
+    // var person = {[key]:"John"};
+    // console.log(person); // should print  Object { name="John"}
+  }
+
   if (action.type === "set-messages") {
     return { ...state,
-      msgs: action.messages,
-      directMessages: action.directMessages
+      msgs: { ...state.msgs,
+        [action.roomName]: action.messages
+      },
+      directMessages: { ...state.directMessages,
+        [action.roomName]: action.directMessages
+      }
     };
   }
 
@@ -36151,10 +36281,10 @@ let reducer = (state, action) => {
 };
 
 const store = Object(redux__WEBPACK_IMPORTED_MODULE_0__["createStore"])(reducer, {
-  msgs: [],
+  msgs: {},
   loggedIn: false,
   isAdmin: false,
-  directMessages: []
+  directMessages: {}
 }, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 /* harmony default export */ __webpack_exports__["default"] = (store);
 
