@@ -47,7 +47,14 @@ class UnconnectedChatMessages extends Component {
 
     //based on the returned messages list to generate the active users who have posts
 
-    console.log(this.props.messages);
+    console.log(
+      "messages in the ChatMessages component props",
+      this.props.messages
+    );
+    console.log(
+      "Direct messages in ChatMessages component props",
+      this.props.directMessages
+    );
     let roomMessages = this.props.messages[this.props.roomName];
     let roomdirectMessages = this.props.directMessages[this.props.roomName];
 
@@ -66,7 +73,7 @@ class UnconnectedChatMessages extends Component {
         acc[message.username] = true;
       return acc;
     }, {});
-    console.log(activeUsers);
+    console.log("Active users list", activeUsers);
 
     return (
       <div>

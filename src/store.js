@@ -1,10 +1,15 @@
+import React, { Component } from "react";
 import { createStore } from "redux";
+import ChatRoom from "./ChatRoom.jsx";
 let reducer = (state, action) => {
   if (action.type === "login-success") {
     return { ...state, loggedIn: true, isAdmin: action.content };
   }
   if (action.type === "login-off") {
     return { ...state, loggedIn: false };
+  }
+  if (action.type === "add-room") {
+    return { ...state, ChatRooms: state.ChatRooms.concat(<ChatRoom />) };
   }
   if (action.type === "init-room") {
     return {
@@ -35,6 +40,7 @@ let reducer = (state, action) => {
 const store = createStore(
   reducer,
   {
+    ChatRooms: [<ChatRoom />],
     msgs: {},
     loggedIn: false,
     isAdmin: false,

@@ -70,6 +70,7 @@ class ChatForm extends Component {
     let data = new FormData();
     data.append("msg", this.state.directmessage);
     data.append("recipient", this.state.recipient);
+    data.append("roomName", this.props.roomName);
     data.append("timestamp", timenow);
 
     fetch("/direct-message", {

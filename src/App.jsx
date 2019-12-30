@@ -7,9 +7,6 @@ import ChatRoom from "./ChatRoom.jsx";
 class UnconnectedApp extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      ChatRooms: [<ChatRoom />]
-    };
 
     // do the authentification in the constructor of the App. If the cookied existed, server return the success
     // update the state
@@ -33,7 +30,10 @@ class UnconnectedApp extends Component {
     }
   };
   handleAddChatRoom = () => {
-    this.setState({ ChatRooms: this.state.ChatRooms.concat(<ChatRoom />) });
+    this.props.dispatch({
+      type: "add-room"
+    });
+    // this.setState({ ChatRooms: this.state.ChatRooms.concat(<ChatRoom />) });
   };
   render = () => {
     console.log("In App");
@@ -43,7 +43,7 @@ class UnconnectedApp extends Component {
     if (this.props.lgin) {
       return (
         <div>
-          {this.state.ChatRooms}
+          {this.props.ChatRooms}
           <button onClick={this.handleAddChatRoom}>Create Chat Room</button>
         </div>
       );
@@ -59,7 +59,11 @@ class UnconnectedApp extends Component {
   };
 }
 let mapStateToProps = state => {
-  return { lgin: state.loggedIn, isAdmin: state.isAdmin };
+  return {
+    lgin: state.loggedIn,
+    isAdmin: state.isAdmin,
+    ChatRooms: state.ChatRooms
+  };
 };
 let App = connect(mapStateToProps)(UnconnectedApp);
 export default App;

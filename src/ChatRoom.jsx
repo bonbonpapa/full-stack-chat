@@ -9,20 +9,20 @@ class ChatRoom extends Component {
     super(props);
     console.log("Instantiating");
 
-    console.log("Before the first render");
-    let nameEntered = window.prompt("What is the name of Chat Room?");
-    console.log("This is what the user entered", nameEntered);
-
     this.state = {
-      roomName: nameEntered
+      roomName: ""
     };
-    console.log("Init of the room state with", this.state.roomName);
 
     console.log("Instantiating completed");
   }
 
   componentDidMount = () => {
-    this.InitChatRoom();
+    console.log("Before the first render");
+    let nameEntered = window.prompt("What is the name of Chat Room?");
+    console.log("This is what the user entered", nameEntered);
+    this.setState({ roomName: nameEntered });
+    console.log("Init of the room state with", this.state.roomName);
+    //  this.InitChatRoom();
   };
 
   InitChatRoom = async () => {
@@ -50,6 +50,8 @@ class ChatRoom extends Component {
     console.log("In Chat Room Components");
     if (this.props.isAdmin) console.log("this is the admin user");
     else console.log("this is NOT admin user");
+
+    this.InitChatRoom();
 
     return (
       <div>

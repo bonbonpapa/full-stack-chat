@@ -35566,7 +35566,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 class UnconnectedApp extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
   constructor(props) {
-    super(props);
+    super(props); // do the authentification in the constructor of the App. If the cookied existed, server return the success
+    // update the state
 
     _defineProperty(this, "authenInitial", async () => {
       let response = await fetch("/auth");
@@ -35584,9 +35585,9 @@ class UnconnectedApp extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     });
 
     _defineProperty(this, "handleAddChatRoom", () => {
-      this.setState({
-        ChatRooms: this.state.ChatRooms.concat(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_ChatRoom_jsx__WEBPACK_IMPORTED_MODULE_4__["default"], null))
-      });
+      this.props.dispatch({
+        type: "add-room"
+      }); // this.setState({ ChatRooms: this.state.ChatRooms.concat(<ChatRoom />) });
     });
 
     _defineProperty(this, "render", () => {
@@ -35594,18 +35595,13 @@ class UnconnectedApp extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
       if (this.props.isAdmin) console.log("this is the admin user");else console.log("this is NOT admin user");
 
       if (this.props.lgin) {
-        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, this.state.ChatRooms, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, this.props.ChatRooms, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
           onClick: this.handleAddChatRoom
         }, "Create Chat Room"));
       }
 
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, "Signup"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Signup_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], null), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, "Login"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Login_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], null));
     });
-
-    this.state = {
-      ChatRooms: [react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_ChatRoom_jsx__WEBPACK_IMPORTED_MODULE_4__["default"], null)]
-    }; // do the authentification in the constructor of the App. If the cookied existed, server return the success
-    // update the state
 
     this.authenInitial(); // Question to ask:
     // in the constuctor, the auth will be complted so that isAdmin will be updated to true for admin user
@@ -35617,7 +35613,8 @@ class UnconnectedApp extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
 let mapStateToProps = state => {
   return {
     lgin: state.loggedIn,
-    isAdmin: state.isAdmin
+    isAdmin: state.isAdmin,
+    ChatRooms: state.ChatRooms
   };
 };
 
@@ -35724,6 +35721,7 @@ class ChatForm extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
       let data = new FormData();
       data.append("msg", this.state.directmessage);
       data.append("recipient", this.state.recipient);
+      data.append("roomName", this.props.roomName);
       data.append("timestamp", timenow);
       fetch("/direct-message", {
         method: "POST",
@@ -35849,7 +35847,8 @@ class UnconnectedChatMessages extends react__WEBPACK_IMPORTED_MODULE_0__["Compon
       }, e); //based on the returned messages list to generate the active users who have posts
 
 
-      console.log(this.props.messages);
+      console.log("messages in the ChatMessages component props", this.props.messages);
+      console.log("Direct messages in ChatMessages component props", this.props.directMessages);
       let roomMessages = this.props.messages[this.props.roomName];
       let roomdirectMessages = this.props.directMessages[this.props.roomName];
 
@@ -35868,7 +35867,7 @@ class UnconnectedChatMessages extends react__WEBPACK_IMPORTED_MODULE_0__["Compon
         if (Date.now() - timestamp.valueOf() <= 10000) acc[message.username] = true;
         return acc;
       }, {});
-      console.log(activeUsers);
+      console.log("Active users list", activeUsers);
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3", null, "Messages"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", null, roomMessages.map((e, idx) => {
         return msgToElement(e, idx);
       })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3", null, "Direct Messages"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", null, roomdirectMessages.map((e, idx) => {
@@ -35921,7 +35920,13 @@ class ChatRoom extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     super(props);
 
     _defineProperty(this, "componentDidMount", () => {
-      this.InitChatRoom();
+      console.log("Before the first render");
+      let nameEntered = window.prompt("What is the name of Chat Room?");
+      console.log("This is what the user entered", nameEntered);
+      this.setState({
+        roomName: nameEntered
+      });
+      console.log("Init of the room state with", this.state.roomName); //  this.InitChatRoom();
     });
 
     _defineProperty(this, "InitChatRoom", async () => {
@@ -35948,6 +35953,7 @@ class ChatRoom extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     _defineProperty(this, "render", () => {
       console.log("In Chat Room Components");
       if (this.props.isAdmin) console.log("this is the admin user");else console.log("this is NOT admin user");
+      this.InitChatRoom();
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_ChatMessages_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
         roomName: this.state.roomName
       }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_ChatForm_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], {
@@ -35958,13 +35964,9 @@ class ChatRoom extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     });
 
     console.log("Instantiating");
-    console.log("Before the first render");
-    let nameEntered = window.prompt("What is the name of Chat Room?");
-    console.log("This is what the user entered", nameEntered);
     this.state = {
-      roomName: nameEntered
+      roomName: ""
     };
-    console.log("Init of the room state with", this.state.roomName);
     console.log("Instantiating completed");
   }
 
@@ -36235,7 +36237,12 @@ if(false) {}
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var redux__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var redux__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
+/* harmony import */ var _ChatRoom_jsx__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ChatRoom.jsx */ "./src/ChatRoom.jsx");
+
+
 
 
 let reducer = (state, action) => {
@@ -36249,6 +36256,12 @@ let reducer = (state, action) => {
   if (action.type === "login-off") {
     return { ...state,
       loggedIn: false
+    };
+  }
+
+  if (action.type === "add-room") {
+    return { ...state,
+      ChatRooms: state.ChatRooms.concat(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_ChatRoom_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], null))
     };
   }
 
@@ -36280,7 +36293,8 @@ let reducer = (state, action) => {
   return state;
 };
 
-const store = Object(redux__WEBPACK_IMPORTED_MODULE_0__["createStore"])(reducer, {
+const store = Object(redux__WEBPACK_IMPORTED_MODULE_1__["createStore"])(reducer, {
+  ChatRooms: [react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_ChatRoom_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], null)],
   msgs: {},
   loggedIn: false,
   isAdmin: false,

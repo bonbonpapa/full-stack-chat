@@ -27,7 +27,7 @@ app.get("/auth", function(req, res) {
 app.get("/messages", function(req, res) {
   const user = sessions[req.cookies["sid"]];
   const roomName = req.query.roomName;
-  console.log("Messages updates query from", roomName);
+  //console.log("Messages updates query from", roomName);
 
   if (user !== undefined) {
     const aLength = messages.length;
@@ -101,6 +101,7 @@ app.post("/direct-message", upload.none(), (req, res) => {
   const sessionId = req.cookies.sid;
   const username = sessions[sessionId];
   const recipient = req.body.recipient;
+  const roomName = req.body.roomName;
 
   const newMsg = {
     username: username,
@@ -108,7 +109,7 @@ app.post("/direct-message", upload.none(), (req, res) => {
     msgtime: req.body.timestamp,
     imgs_path: []
   };
-  directMessages[recipient].push(newMsg);
+  directMessages[roomName][recipient].push(newMsg);
   res.send(JSON.stringify({ success: true }));
 });
 
@@ -204,7 +205,7 @@ app.post("/signup", upload.none(), (req, res) => {
   // need to initialize the direct messages for this particular user as this is user specific
   let rooms = Object.keys(directMessages);
   for (let i = 0; i < rooms.length; i++) {
-    let roomName = room[i];
+    let roomName = rooms[i];
     directMessages[roomName] = [];
   }
 
@@ -223,10 +224,12 @@ app.post("/newroom", upload.none(), (req, res) => {
   // need to initialize the direct messages for this particular user as this is user specific
   directMessages[roomName] = {};
   let users = Object.keys(passwords);
+  console.log("users current", users);
   for (let i = 0; i < users.length; i++) {
     let user = users[i];
     directMessages[roomName][user] = [];
   }
+  console.log("direct messages after init", directMessages);
   messages[roomName] = [];
 
   res.send(JSON.stringify({ success: true }));
