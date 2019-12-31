@@ -69,6 +69,13 @@ app.get("/roomslist", function(req, res) {
         roomsList: roomsList
       })
     );
+  } else {
+    res.send(
+      JSON.stringify({
+        success: false,
+        roomsList: []
+      })
+    );
   }
 });
 app.post("/newmessage", upload.array("images", 9), (req, res) => {

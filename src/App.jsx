@@ -82,35 +82,6 @@ class UnconnectedApp extends Component {
         });
       });
     }
-
-    // let newroomState = {
-    //   ChatRooms: [],
-    //   roomNames: [],
-    //   msgs: {},
-    //   directMessages: {}
-    // };
-
-    // if (parsed.success) {
-    //   parsed.roomsList.forEach(room => {
-    //     newroomState = {
-    //       ...newroomState,
-    //       ChatRooms: newroomState.ChatRooms.concat(
-    //         <ChatRoom roomName={room} />
-    //       ),
-    //       roomNames: newroomState.roomNames.concat(room),
-    //       msgs: { ...newroomState.msgs, [room]: [] },
-    //       directMessages: {
-    //         ...newroomState.directMessages,
-    //         [room]: []
-    //       }
-    //     };
-    //   });
-
-    // this.props.dispatch({
-    //   type: "set-rooms",
-    //   initialroomState: newroomState
-    // });
-    // }
   };
 
   render = () => {
