@@ -73,9 +73,7 @@ class UnconnectedApp extends Component {
 
     if (parsed.success) {
       let filterRooms = parsed.roomsList.filter(room => {
-        this.props.roomNames.every(rm => {
-          return rm !== room;
-        });
+        return !this.props.roomNames.includes(room);
       });
       filterRooms.forEach(newRoom => {
         this.props.dispatch({
@@ -146,7 +144,7 @@ let mapStateToProps = state => {
     lgin: state.loggedIn,
     isAdmin: state.isAdmin,
     ChatRooms: state.ChatRooms,
-    roomNames: state.ChatRooms
+    roomNames: state.roomNames
   };
 };
 let App = connect(mapStateToProps)(UnconnectedApp);

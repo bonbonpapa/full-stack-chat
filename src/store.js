@@ -8,15 +8,6 @@ let reducer = (state, action) => {
   if (action.type === "login-off") {
     return { ...state, loggedIn: false };
   }
-  if (action.type === "set-rooms") {
-    return {
-      ...state,
-      ChatRooms: action.initialroomState.ChatRooms,
-      roomNames: action.initialroomState.roomNames,
-      msgs: action.initialroomState.msgs,
-      directMessages: action.initialroomState.directMessages
-    };
-  }
   if (action.type === "add-room") {
     return {
       ...state,

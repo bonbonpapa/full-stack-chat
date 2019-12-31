@@ -221,7 +221,7 @@ app.post("/signup", upload.none(), (req, res) => {
   let rooms = Object.keys(directMessages);
   for (let i = 0; i < rooms.length; i++) {
     let roomName = rooms[i];
-    directMessages[roomName] = [];
+    directMessages[roomName][username] = [];
   }
 
   console.log("passwords object", passwords);

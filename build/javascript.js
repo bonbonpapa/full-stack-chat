@@ -35621,9 +35621,7 @@ class UnconnectedApp extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
 
       if (parsed.success) {
         let filterRooms = parsed.roomsList.filter(room => {
-          this.props.roomNames.every(rm => {
-            return rm !== room;
-          });
+          return !this.props.roomNames.includes(room);
         });
         filterRooms.forEach(newRoom => {
           this.props.dispatch({
@@ -35695,7 +35693,7 @@ let mapStateToProps = state => {
     lgin: state.loggedIn,
     isAdmin: state.isAdmin,
     ChatRooms: state.ChatRooms,
-    roomNames: state.ChatRooms
+    roomNames: state.roomNames
   };
 };
 
@@ -36301,15 +36299,6 @@ let reducer = (state, action) => {
   if (action.type === "login-off") {
     return { ...state,
       loggedIn: false
-    };
-  }
-
-  if (action.type === "set-rooms") {
-    return { ...state,
-      ChatRooms: action.initialroomState.ChatRooms,
-      roomNames: action.initialroomState.roomNames,
-      msgs: action.initialroomState.msgs,
-      directMessages: action.initialroomState.directMessages
     };
   }
 
