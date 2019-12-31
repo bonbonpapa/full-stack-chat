@@ -35584,10 +35584,80 @@ class UnconnectedApp extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
       }
     });
 
+    _defineProperty(this, "InitChatRoom", async roomName => {
+      let data = new FormData();
+      data.append("roomName", roomName);
+      let response = await fetch("/newroom", {
+        method: "POST",
+        body: data,
+        credentials: "include"
+      });
+      let responseBody = await response.text();
+      console.log("response from new chat room", responseBody);
+      let parsed = JSON.parse(responseBody);
+      console.log("parsed", parsed);
+
+      if (parsed.success) {
+        this.props.dispatch({
+          type: "add-room",
+          roomName: roomName
+        });
+      }
+    });
+
     _defineProperty(this, "handleAddChatRoom", () => {
-      this.props.dispatch({
-        type: "add-room"
-      }); // this.setState({ ChatRooms: this.state.ChatRooms.concat(<ChatRoom />) });
+      let nameEntered = window.prompt("What is the name of Chat Room?");
+      console.log("This is what the user entered", nameEntered);
+      this.InitChatRoom(nameEntered);
+    });
+
+    _defineProperty(this, "updateChatRooms", async () => {
+      let response = await fetch("/roomslist");
+      let responseBody = await response.text();
+      console.log("response from rooms list ", responseBody);
+      let parsed = JSON.parse(responseBody);
+      console.log("parsed", parsed);
+      console.log("rooms list", parsed.roomsList);
+
+      if (parsed.success) {
+        let filterRooms = parsed.roomsList.filter(room => {
+          this.props.roomNames.every(rm => {
+            return rm !== room;
+          });
+        });
+        filterRooms.forEach(newRoom => {
+          this.props.dispatch({
+            type: "add-room",
+            roomName: newRoom
+          });
+        });
+      } // let newroomState = {
+      //   ChatRooms: [],
+      //   roomNames: [],
+      //   msgs: {},
+      //   directMessages: {}
+      // };
+      // if (parsed.success) {
+      //   parsed.roomsList.forEach(room => {
+      //     newroomState = {
+      //       ...newroomState,
+      //       ChatRooms: newroomState.ChatRooms.concat(
+      //         <ChatRoom roomName={room} />
+      //       ),
+      //       roomNames: newroomState.roomNames.concat(room),
+      //       msgs: { ...newroomState.msgs, [room]: [] },
+      //       directMessages: {
+      //         ...newroomState.directMessages,
+      //         [room]: []
+      //       }
+      //     };
+      //   });
+      // this.props.dispatch({
+      //   type: "set-rooms",
+      //   initialroomState: newroomState
+      // });
+      // }
+
     });
 
     _defineProperty(this, "render", () => {
@@ -35595,6 +35665,8 @@ class UnconnectedApp extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
       if (this.props.isAdmin) console.log("this is the admin user");else console.log("this is NOT admin user");
 
       if (this.props.lgin) {
+        // in the app render beginning, to fetch the list of the ChatRoom (room Names) and create the list of the ChatRooms components
+        // and update the state of the, concat the array of [</Chatroom>]
         return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, this.props.ChatRooms, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
           onClick: this.handleAddChatRoom
         }, "Create Chat Room"));
@@ -35608,13 +35680,22 @@ class UnconnectedApp extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     // but actually, the isAdmin state not updated in the first render, only when the manual reload the page, the state will be udpdated.
   }
 
+  componentDidMount() {
+    this.internvalChatroom = setInterval(this.updateChatRooms, 1000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.internvalChatroom);
+  }
+
 }
 
 let mapStateToProps = state => {
   return {
     lgin: state.loggedIn,
     isAdmin: state.isAdmin,
-    ChatRooms: state.ChatRooms
+    ChatRooms: state.ChatRooms,
+    roomNames: state.ChatRooms
   };
 };
 
@@ -35919,55 +36000,19 @@ class ChatRoom extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
   constructor(props) {
     super(props);
 
-    _defineProperty(this, "componentDidMount", () => {
-      console.log("Before the first render");
-      let nameEntered = window.prompt("What is the name of Chat Room?");
-      console.log("This is what the user entered", nameEntered);
-      this.setState({
-        roomName: nameEntered
-      });
-      console.log("Init of the room state with", this.state.roomName); //  this.InitChatRoom();
-    });
-
-    _defineProperty(this, "InitChatRoom", async () => {
-      let data = new FormData();
-      data.append("roomName", this.state.roomName);
-      let response = await fetch("/newroom", {
-        method: "POST",
-        body: data,
-        credentials: "include"
-      });
-      let responseBody = await response.text();
-      console.log("response from new chat room", responseBody);
-      let parsed = JSON.parse(responseBody);
-      console.log("parsed", parsed);
-
-      if (parsed.success) {
-        this.props.dispatch({
-          type: "init-room",
-          roomName: this.state.roomName
-        });
-      }
-    });
-
     _defineProperty(this, "render", () => {
       console.log("In Chat Room Components");
       if (this.props.isAdmin) console.log("this is the admin user");else console.log("this is NOT admin user");
-      this.InitChatRoom();
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_ChatMessages_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
-        roomName: this.state.roomName
+        roomName: this.props.roomName
       }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_ChatForm_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], {
-        roomName: this.state.roomName
+        roomName: this.props.roomName
       }), this.props.isAdmin ? react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_AdminForm_jsx__WEBPACK_IMPORTED_MODULE_4__["default"], {
-        roomName: this.state.roomName
+        roomName: this.props.roomName
       }) : "");
     });
 
     console.log("Instantiating");
-    this.state = {
-      roomName: ""
-    };
-    console.log("Instantiating completed");
   }
 
 }
@@ -36259,25 +36304,34 @@ let reducer = (state, action) => {
     };
   }
 
-  if (action.type === "add-room") {
+  if (action.type === "set-rooms") {
     return { ...state,
-      ChatRooms: state.ChatRooms.concat(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_ChatRoom_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], null))
+      ChatRooms: action.initialroomState.ChatRooms,
+      roomNames: action.initialroomState.roomNames,
+      msgs: action.initialroomState.msgs,
+      directMessages: action.initialroomState.directMessages
     };
   }
 
-  if (action.type === "init-room") {
+  if (action.type === "add-room") {
     return { ...state,
+      ChatRooms: state.ChatRooms.concat(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_ChatRoom_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
+        roomName: action.roomName
+      })),
+      roomNames: state.roomNames.concat(action.roomName),
       msgs: { ...state.msgs,
         [action.roomName]: []
       },
       directMessages: { ...state.directMessages,
         [action.roomName]: []
       }
-    }; //In ES6, you can do like this.
-    // var key = "name";
-    // var person = {[key]:"John"};
-    // console.log(person); // should print  Object { name="John"}
-  }
+    };
+  } //In ES6, you can do like this.
+  // var key = "name";
+  // var person = {[key]:"John"};
+  // console.log(person); // should print  Object { name="John"}
+  //}
+
 
   if (action.type === "set-messages") {
     return { ...state,
@@ -36294,7 +36348,9 @@ let reducer = (state, action) => {
 };
 
 const store = Object(redux__WEBPACK_IMPORTED_MODULE_1__["createStore"])(reducer, {
-  ChatRooms: [react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_ChatRoom_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], null)],
+  //   ChatRooms: [<ChatRoom />],
+  ChatRooms: [],
+  roomNames: [],
   msgs: {},
   loggedIn: false,
   isAdmin: false,

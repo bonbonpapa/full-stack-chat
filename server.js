@@ -12,6 +12,8 @@ let passwords = {};
 let sessions = {};
 let messages = {};
 const directMessages = {};
+let roomsList = [];
+
 reloadMagic(app);
 app.use("/", express.static("build"));
 app.use("/images", express.static(__dirname + "/uploads"));
@@ -55,6 +57,19 @@ app.get("/messages", function(req, res) {
         messages: []
       })
     );
+});
+
+app.get("/roomslist", function(req, res) {
+  const user = sessions[req.cookies["sid"]];
+
+  if (user !== undefined) {
+    res.send(
+      JSON.stringify({
+        success: true,
+        roomsList: roomsList
+      })
+    );
+  }
 });
 app.post("/newmessage", upload.array("images", 9), (req, res) => {
   console.log("*** inside new message");
@@ -220,6 +235,7 @@ app.post("/newroom", upload.none(), (req, res) => {
   console.log("username", username);
   const roomName = req.body.roomName;
   console.log("Room Name ", roomName);
+  roomsList.push(roomName);
 
   // need to initialize the direct messages for this particular user as this is user specific
   directMessages[roomName] = {};

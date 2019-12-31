@@ -8,56 +8,18 @@ class ChatRoom extends Component {
   constructor(props) {
     super(props);
     console.log("Instantiating");
-
-    this.state = {
-      roomName: ""
-    };
-
-    console.log("Instantiating completed");
   }
-
-  componentDidMount = () => {
-    console.log("Before the first render");
-    let nameEntered = window.prompt("What is the name of Chat Room?");
-    console.log("This is what the user entered", nameEntered);
-    this.setState({ roomName: nameEntered });
-    console.log("Init of the room state with", this.state.roomName);
-    //  this.InitChatRoom();
-  };
-
-  InitChatRoom = async () => {
-    let data = new FormData();
-    data.append("roomName", this.state.roomName);
-
-    let response = await fetch("/newroom", {
-      method: "POST",
-      body: data,
-      credentials: "include"
-    });
-    let responseBody = await response.text();
-    console.log("response from new chat room", responseBody);
-    let parsed = JSON.parse(responseBody);
-    console.log("parsed", parsed);
-    if (parsed.success) {
-      this.props.dispatch({
-        type: "init-room",
-        roomName: this.state.roomName
-      });
-    }
-  };
 
   render = () => {
     console.log("In Chat Room Components");
     if (this.props.isAdmin) console.log("this is the admin user");
     else console.log("this is NOT admin user");
 
-    this.InitChatRoom();
-
     return (
       <div>
-        <ChatMessages roomName={this.state.roomName} />
-        <ChatForm roomName={this.state.roomName} />
-        {this.props.isAdmin ? <AdminForm roomName={this.state.roomName} /> : ""}
+        <ChatMessages roomName={this.props.roomName} />
+        <ChatForm roomName={this.props.roomName} />
+        {this.props.isAdmin ? <AdminForm roomName={this.props.roomName} /> : ""}
       </div>
     );
   };

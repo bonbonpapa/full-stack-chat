@@ -8,23 +8,35 @@ let reducer = (state, action) => {
   if (action.type === "login-off") {
     return { ...state, loggedIn: false };
   }
-  if (action.type === "add-room") {
-    return { ...state, ChatRooms: state.ChatRooms.concat(<ChatRoom />) };
-  }
-  if (action.type === "init-room") {
+  if (action.type === "set-rooms") {
     return {
       ...state,
+      ChatRooms: action.initialroomState.ChatRooms,
+      roomNames: action.initialroomState.roomNames,
+      msgs: action.initialroomState.msgs,
+      directMessages: action.initialroomState.directMessages
+    };
+  }
+  if (action.type === "add-room") {
+    return {
+      ...state,
+      ChatRooms: state.ChatRooms.concat(
+        <ChatRoom roomName={action.roomName} />
+      ),
+      roomNames: state.roomNames.concat(action.roomName),
       msgs: { ...state.msgs, [action.roomName]: [] },
       directMessages: {
         ...state.directMessages,
         [action.roomName]: []
       }
     };
-    //In ES6, you can do like this.
-    // var key = "name";
-    // var person = {[key]:"John"};
-    // console.log(person); // should print  Object { name="John"}
   }
+
+  //In ES6, you can do like this.
+  // var key = "name";
+  // var person = {[key]:"John"};
+  // console.log(person); // should print  Object { name="John"}
+  //}
   if (action.type === "set-messages") {
     return {
       ...state,
@@ -40,7 +52,9 @@ let reducer = (state, action) => {
 const store = createStore(
   reducer,
   {
-    ChatRooms: [<ChatRoom />],
+    //   ChatRooms: [<ChatRoom />],
+    ChatRooms: [],
+    roomNames: [],
     msgs: {},
     loggedIn: false,
     isAdmin: false,
