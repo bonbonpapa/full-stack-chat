@@ -22,12 +22,27 @@ class ChatForm extends Component {
       type: "login-off"
     });
   };
-  handleClearMessages = event => {
+  handleClearMessages = async () => {
     console.log("clear message");
-    fetch("/clearmessages", {
+
+    let data = new FormData();
+    data.append("roomName", this.props.roomName);
+
+    let response = await fetch("/clearmessages", {
       method: "POST",
+      body: data,
       credentials: "include"
     });
+
+    let responseBody = await response.text();
+    console.log("response from clear messages", responseBody);
+    let parsed = JSON.parse(responseBody);
+    console.log("parsed", parsed);
+    if (!parsed.success) {
+      alert("Clear messages failed");
+      return;
+    }
+    alert("Messages in Chatroom" + this.props.roomName + " has been cleared!");
   };
   handleSubmit = event => {
     event.preventDefault();

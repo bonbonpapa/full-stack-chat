@@ -19,13 +19,13 @@ class ChatRoom extends Component {
       <div>
         <ChatMessages roomName={this.props.roomName} />
         <ChatForm roomName={this.props.roomName} />
-        {this.props.isAdmin ? <AdminForm roomName={this.props.roomName} /> : ""}
+        <AdminForm roomName={this.props.roomName} />
       </div>
     );
   };
 }
 
 let mapStateToProps = state => {
-  return { lgin: state.loggedIn, isAdmin: state.isAdmin };
+  return { lgin: state.loggedIn };
 };
 export default connect(mapStateToProps)(ChatRoom);

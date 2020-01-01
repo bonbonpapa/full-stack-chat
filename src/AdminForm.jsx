@@ -4,20 +4,15 @@ import { connect } from "react-redux";
 class AdminForm extends Component {
   constructor(props) {
     super(props);
-    this.state = { kickuser: "" };
   }
-  handleKickUser = event => {
-    this.setState({ kickuser: event.target.value });
-  };
 
   handleSubmit = async event => {
     event.preventDefault();
     const usertokick = window.prompt("who do you want to kick");
-    this.setState({ kickuser: usertokick });
-    console.log(this.state);
 
     let data = new FormData();
-    data.append("usertokick", this.state.kickuser);
+    data.append("usertokick", usertokick);
+
     let response = await fetch("/kickuser", {
       method: "POST",
       body: data,
@@ -27,23 +22,24 @@ class AdminForm extends Component {
     console.log("response Body from kick off users", responseBody);
     let body = JSON.parse(responseBody);
     console.log("parsed body", body);
+    if (!body.success) {
+      alert("User not existed");
+      return;
+    }
+    alert("User kicked off");
   };
   render = () => {
-    return (
-      <div>
-        <form onSubmit={this.handleSubmit}>
-          <div>
-            <label>User to kick</label>
-            <input
-              onChange={this.handleKickUser}
-              type="text"
-              value={this.state.kickuser}
-            />
-          </div>
-          <input type="submit" />
-        </form>
-      </div>
-    );
+    if (this.props.isAdmin) {
+      return (
+        <div>
+          <label>User type: admin</label>
+          <button type="button" onClick={this.handleSubmit}>
+            Kick off user
+          </button>
+        </div>
+      );
+    }
+    return <div>User type: user</div>;
   };
 }
 let mapStateToProps = state => {

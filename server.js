@@ -13,6 +13,7 @@ let sessions = {};
 let messages = {};
 const directMessages = {};
 let roomsList = [];
+const adminUser = "admin.";
 
 reloadMagic(app);
 app.use("/", express.static("build"));
@@ -24,7 +25,7 @@ app.get("/auth", function(req, res) {
   if (user === undefined) {
     return res.send(JSON.stringify({ success: false }));
   }
-  res.send(JSON.stringify({ success: true, isAdmin: user === "admin." }));
+  res.send(JSON.stringify({ success: true, isAdmin: user === adminUser }));
 });
 app.get("/messages", function(req, res) {
   const user = sessions[req.cookies["sid"]];
@@ -106,12 +107,7 @@ app.post("/newmessage", upload.array("images", 9), (req, res) => {
   console.log("new message", newMsg);
   let room = req.body.roomName;
   messages[room] = messages[room].concat(newMsg);
-  // let rooms = Object.keys(messages);
-  // for (let i = 0; i < rooms.length; i++) {
-  //   let room = rooms[i];
-  //   messages[room] = messages[room].concat(newMsg);
-  // }
-  //messages = messages.concat(newMsg);
+
   console.log("updated messages", messages);
   res.send(JSON.stringify({ success: true }));
 });
@@ -136,15 +132,18 @@ app.post("/direct-message", upload.none(), (req, res) => {
 });
 
 app.post("/clearmessages", upload.none(), (req, res) => {
-  console.log("**** I'm in the signup endpoint");
+  console.log("**** I'm in the clear messages endpoint");
   console.log("this is the body", req.body);
   let sessionId = req.cookies.sid;
   let username = sessions[sessionId];
   console.log("username", username);
-  const newMessages = messages.filter(msg => {
+  const roomName = req.body.roomName;
+  console.log("roomName", roomName);
+
+  const newMessages = messages[roomName].filter(msg => {
     return msg.username !== username;
   });
-  messages = newMessages;
+  messages[roomName] = newMessages;
   console.log("clear messages", messages);
   res.send(JSON.stringify({ success: true }));
 });
@@ -164,21 +163,18 @@ app.post("/login", upload.none(), (req, res) => {
       expires: new Date(Date.now() + 900000)
     });
 
-    // to update the messages with new user log in messages
-    // const time = new Date();
-    // let newMsg = { username: username, message: "Just log in", msgtime: time };
-    // console.log("new message", newMsg);
+    //to update the messages with new user log in messages in every chatroom
+    const time = new Date();
+    let newMsg = { username: username, message: "Just log in", msgtime: time };
+    console.log("new message", newMsg);
 
-    // let rooms = Object.keys(messages);
-    // for (let i = 0; i < rooms.length; i++) {
-    //   let room = rooms[i];
-    //   messages[room] = message[room].concat(newMsg);
-    // }
+    for (let i = 0; i < roomsList.length; i++) {
+      let room = roomsList[i];
+      messages[room] = messages[room].concat(newMsg);
+    }
 
-    // //messages = messages.concat(newMsg);
-    // console.log("updated messages", messages);
     // send the response
-    const isAdmin = username === "admin.";
+    const isAdmin = username === adminUser;
     if (isAdmin) console.log("The user is the admin");
     else console.log("the user is NOT admin");
     res.send(JSON.stringify({ success: true, isAdmin: isAdmin }));
@@ -199,18 +195,24 @@ app.post("/kickuser", upload.none(), (req, res) => {
   const sidtokick = Object.keys(sessions)[
     Object.values(sessions).indexOf(usertokick)
   ];
+  if (sessions[sidtokick] === undefined) {
+    res.send(JSON.stringify({ success: false }));
+    return;
+  }
   delete sessions[sidtokick];
   console.log("sessions after kickoff", sessions);
   // to update the messages with new user kick off message
   const time = new Date();
   let newMsg = {
-    username: usertokick,
-    message: "Just kick off",
+    username: adminUser,
+    message: usertokick + " was just kicked off by admin",
     msgtime: time
   };
   console.log("new message for the kick off information", newMsg);
-  messages = messages.concat(newMsg);
-
+  // show the messages of kick off the user in all the chat rooms
+  roomsList.forEach(room => {
+    messages[room] = messages[room].concat(newMsg);
+  });
   res.send(JSON.stringify({ success: true }));
 });
 app.post("/signup", upload.none(), (req, res) => {

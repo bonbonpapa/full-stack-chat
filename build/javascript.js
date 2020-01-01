@@ -35485,21 +35485,11 @@ class AdminForm extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
   constructor(props) {
     super(props);
 
-    _defineProperty(this, "handleKickUser", event => {
-      this.setState({
-        kickuser: event.target.value
-      });
-    });
-
     _defineProperty(this, "handleSubmit", async event => {
       event.preventDefault();
       const usertokick = window.prompt("who do you want to kick");
-      this.setState({
-        kickuser: usertokick
-      });
-      console.log(this.state);
       let data = new FormData();
-      data.append("usertokick", this.state.kickuser);
+      data.append("usertokick", usertokick);
       let response = await fetch("/kickuser", {
         method: "POST",
         body: data,
@@ -35509,23 +35499,25 @@ class AdminForm extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
       console.log("response Body from kick off users", responseBody);
       let body = JSON.parse(responseBody);
       console.log("parsed body", body);
+
+      if (!body.success) {
+        alert("User not existed");
+        return;
+      }
+
+      alert("User kicked off");
     });
 
     _defineProperty(this, "render", () => {
-      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("form", {
-        onSubmit: this.handleSubmit
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("label", null, "User to kick"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
-        onChange: this.handleKickUser,
-        type: "text",
-        value: this.state.kickuser
-      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
-        type: "submit"
-      })));
-    });
+      if (this.props.isAdmin) {
+        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("label", null, "User type: admin"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+          type: "button",
+          onClick: this.handleSubmit
+        }, "Kick off user"));
+      }
 
-    this.state = {
-      kickuser: ""
-    };
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, "User type: user");
+    });
   }
 
 }
@@ -35717,12 +35709,26 @@ class ChatForm extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
       });
     });
 
-    _defineProperty(this, "handleClearMessages", event => {
+    _defineProperty(this, "handleClearMessages", async () => {
       console.log("clear message");
-      fetch("/clearmessages", {
+      let data = new FormData();
+      data.append("roomName", this.props.roomName);
+      let response = await fetch("/clearmessages", {
         method: "POST",
+        body: data,
         credentials: "include"
       });
+      let responseBody = await response.text();
+      console.log("response from clear messages", responseBody);
+      let parsed = JSON.parse(responseBody);
+      console.log("parsed", parsed);
+
+      if (!parsed.success) {
+        alert("Clear messages failed");
+        return;
+      }
+
+      alert("Messages in Chatroom" + this.props.roomName + " has been cleared!");
     });
 
     _defineProperty(this, "handleSubmit", event => {
@@ -35979,9 +35985,9 @@ class ChatRoom extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
         roomName: this.props.roomName
       }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_ChatForm_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], {
         roomName: this.props.roomName
-      }), this.props.isAdmin ? react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_AdminForm_jsx__WEBPACK_IMPORTED_MODULE_4__["default"], {
+      }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_AdminForm_jsx__WEBPACK_IMPORTED_MODULE_4__["default"], {
         roomName: this.props.roomName
-      }) : "");
+      }));
     });
 
     console.log("Instantiating");
@@ -35991,8 +35997,7 @@ class ChatRoom extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
 
 let mapStateToProps = state => {
   return {
-    lgin: state.loggedIn,
-    isAdmin: state.isAdmin
+    lgin: state.loggedIn
   };
 };
 
@@ -36050,7 +36055,7 @@ class UnconnectedLogin extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
       console.log("responseBody from login", responseBody);
       let body = JSON.parse(responseBody);
       console.log("parsed body", body);
-      const isAdmin = body.isAdmin;
+      let isAdmin = body.isAdmin;
 
       if (!body.success) {
         alert("login failed");
@@ -36154,7 +36159,8 @@ class Signup extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
         }
 
         this.props.dispatch({
-          type: "login-success"
+          type: "login-success",
+          content: body.isAdmin
         });
       }
     });

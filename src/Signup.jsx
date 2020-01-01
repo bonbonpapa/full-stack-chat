@@ -43,7 +43,8 @@ class Signup extends Component {
         return;
       }
       this.props.dispatch({
-        type: "login-success"
+        type: "login-success",
+        content: body.isAdmin
       });
     }
   };
