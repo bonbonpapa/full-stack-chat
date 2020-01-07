@@ -16,7 +16,8 @@ class ChatRoom extends Component {
     else console.log("this is NOT admin user");
 
     return (
-      <div>
+      <div className="chat">
+        <h1>{this.props.roomName}</h1>
         <ChatMessages roomName={this.props.roomName} />
         <ChatForm roomName={this.props.roomName} />
         <AdminForm roomName={this.props.roomName} />

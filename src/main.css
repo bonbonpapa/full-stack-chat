@@ -1,3 +1,72 @@
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
 body {
-    background-color: #bbb;
+  background: #c5ddeb;
+  font: 14px/20px "Lato", Arial, sans-serif;
+  padding: 40px 0;
+  color: white;
+}
+
+.container {
+  margin: 0 auto;
+  width: 750px;
+  background: #444753;
+  border-radius: 5px;
+}
+
+.signform {
+  background: #f2f5f8;
+  color: #434651;
+  width: 500px;
+  border-radius: 6px;
+  margin: 0 auto 0 auto;
+  padding: 0px 0px 70px 0px;
+  border: #2980b9 4px solid;
+}
+
+.room-list {
+  width: 260px;
+  float: left;
+}
+
+.room-list ul {
+  padding: 20px;
+  height: 770px;
+}
+
+.room-list ul li {
+  padding-bottom: 20px;
+}
+
+.chat {
+  width: 490px;
+  float: left;
+  background: #f2f5f8;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  color: #434651;
+}
+
+.message {
+  color: white;
+  padding: 18px 20px;
+  line-height: 26px;
+  font-size: 16px;
+  border-radius: 7px;
+  margin-bottom: 30px;
+  width: 90%;
+  position: relative;
+  background: #94c2ed;
+}
+
+.clearfix:after {
+  visibility: hidden;
+  display: block;
+  font-size: 0;
+  content: " ";
+  clear: both;
+  height: 0;
 }

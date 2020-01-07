@@ -31,7 +31,7 @@ class UnconnectedChatMessages extends Component {
   };
   render = () => {
     let msgToElement = (e, idx) => (
-      <li key={e.username + idx}>
+      <li key={e.username + idx} className="message">
         {e.username} Posted at {new Date(e.msgtime).toLocaleTimeString()} :
         {e.message}
         {e.imgs_path === undefined || e.imgs_path.length === 0 ? (

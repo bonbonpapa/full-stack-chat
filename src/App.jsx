@@ -2,8 +2,9 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import Login from "./Login.jsx";
 import Signup from "./Signup.jsx";
+import Navbar from "./Navbar.jsx";
+import { Route, BrowserRouter, Link } from "react-router-dom";
 import ChatRoom from "./ChatRoom.jsx";
-
 class UnconnectedApp extends Component {
   constructor(props) {
     super(props);
@@ -83,6 +84,14 @@ class UnconnectedApp extends Component {
       });
     }
   };
+  renderRoomDetails = routerData => {
+    const roomName = routerData.match.params.roomName;
+    const roomSelect = this.props.roomNames.find(room => {
+      return room === roomName;
+    });
+    if (roomSelect === undefined) return <div>No room found</div>;
+    return <ChatRoom roomName={roomName} />;
+  };
 
   render = () => {
     console.log("In App");
@@ -94,14 +103,23 @@ class UnconnectedApp extends Component {
       // and update the state of the, concat the array of [</Chatroom>]
 
       return (
-        <div>
-          {this.props.ChatRooms}
-          <button onClick={this.handleAddChatRoom}>Create Chat Room</button>
-        </div>
+        <BrowserRouter>
+          <div className="container clearfix">
+            <div className="room-list">
+              <button onClick={this.handleAddChatRoom}>Create Chat Room</button>
+              <Navbar />
+            </div>
+            <Route
+              exact={true}
+              path="/room/:roomName"
+              render={this.renderRoomDetails}
+            />
+          </div>
+        </BrowserRouter>
       );
     }
     return (
-      <div>
+      <div className="signform">
         <h1>Signup</h1>
         <Signup />
         <h1>Login</h1>
