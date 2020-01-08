@@ -10,7 +10,18 @@ class Navbar extends Component {
           {this.props.roomNames.map(room => {
             return (
               <li className="clearfix">
-                <Link to={"/room/" + room}>{room}</Link>
+                <img
+                  src="http://icons.iconarchive.com/icons/simplefly/simple-green-social-media/256/social-media-chat-icon.png"
+                  alt="avatar"
+                />
+                <div className="about">
+                  <div className="name">
+                    <Link to={"/room/" + room}>{room}</Link>
+                  </div>
+                  <div className="status">
+                    <i className="fa fa-circle online">online</i>
+                  </div>
+                </div>
               </li>
             );
           })}
