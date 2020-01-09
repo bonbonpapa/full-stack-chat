@@ -98,15 +98,17 @@ class ChatForm extends Component {
   };
   render = () => {
     return (
-      <div>
+      <div className="chat-message">
         <form onSubmit={this.handleSubmit}>
           <div>
-            <label>Text Message</label>
-            <input
+            <textarea
+              name="message-to-send"
+              id="message-to-send"
+              placeholder="Type your message"
+              rows="3"
               onChange={this.handleMessageChange}
-              type="text"
               value={this.state.message}
-            />
+            ></textarea>
           </div>
           <div>
             <label>Image Files</label>
@@ -117,14 +119,16 @@ class ChatForm extends Component {
               multiple
             />
           </div>
-          <input type="submit" />
+          <button type="submit">Send</button>
+        </form>
+        <div>
           <button type="button" onClick={this.handleLogout}>
             Logout
           </button>
           <button type="button" onClick={this.handleClearMessages}>
             Clear Messages
           </button>
-        </form>
+        </div>
         <form onSubmit={this.handleSubmitDirectMessage}>
           <div>
             <label>Message to</label>
@@ -133,13 +137,16 @@ class ChatForm extends Component {
               type="text"
               value={this.state.recipient}
             />
-            <input
+            <textarea
+              name="message-to-send"
+              id="message-to-send"
+              placeholder="Type your message"
+              rows="3"
               onChange={this.handleDirectMessage}
-              type="text"
               value={this.state.directmessage}
-            />
+            ></textarea>
           </div>
-          <input type="submit" />
+          <button type="submit">Send</button>
         </form>
       </div>
     );

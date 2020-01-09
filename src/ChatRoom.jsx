@@ -17,7 +17,16 @@ class ChatRoom extends Component {
 
     return (
       <div className="chat">
-        <h1>{this.props.roomName}</h1>
+        <div className="chat-header clearfix">
+          <img
+            src="http://icons.iconarchive.com/icons/simplefly/simple-green-social-media/256/social-media-chat-icon.png"
+            alt="avatar"
+          />
+          <div className="chat-about">
+            <div className="chat-with">{this.props.roomName}</div>
+          </div>
+        </div>
+
         <ChatMessages roomName={this.props.roomName} />
         <ChatForm roomName={this.props.roomName} />
         <AdminForm roomName={this.props.roomName} />

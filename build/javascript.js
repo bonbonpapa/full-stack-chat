@@ -207,7 +207,7 @@ module.exports = _inheritsLoose;
 
 exports = module.exports = __webpack_require__(/*! ../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js")(false);
 // Module
-exports.push([module.i, "*,\r\n*:before,\r\n*:after {\r\n  box-sizing: border-box;\r\n}\r\nbody {\r\n  background: #c5ddeb;\r\n  font: 14px/20px \"Lato\", Arial, sans-serif;\r\n  padding: 40px 0;\r\n  color: white;\r\n}\r\n\r\n.container {\r\n  margin: 0 auto;\r\n  width: 750px;\r\n  background: #444753;\r\n  border-radius: 5px;\r\n}\r\n\r\n.signform {\r\n  background: #f2f5f8;\r\n  color: #434651;\r\n  width: 500px;\r\n  border-radius: 6px;\r\n  margin: 0 auto 0 auto;\r\n  padding: 0px 0px 70px 0px;\r\n  border: #2980b9 4px solid;\r\n}\r\n\r\n.room-list {\r\n  width: 260px;\r\n  float: left;\r\n}\r\n\r\n.room-list ul {\r\n  padding: 20px;\r\n  height: 770px;\r\n  list-style-type: none;\r\n}\r\n\r\n.room-list ul li {\r\n  padding-bottom: 20px;\r\n}\r\n\r\n.room-list img {\r\n  float: left;\r\n  height: 55px;\r\n  width: 55px;\r\n}\r\n.room-list .about {\r\n  float: left;\r\n  margin-top: 8px;\r\n  padding-left: 8px;\r\n}\r\n\r\n.room-list .status {\r\n  color: #92959e;\r\n}\r\n\r\n.chat {\r\n  width: 490px;\r\n  float: left;\r\n  background: #f2f5f8;\r\n  border-top-right-radius: 5px;\r\n  border-bottom-right-radius: 5px;\r\n  color: #434651;\r\n  height: 770px;\r\n  overflow-y: scroll;\r\n}\r\n\r\n.message {\r\n  color: white;\r\n  padding: 18px 20px;\r\n  line-height: 26px;\r\n  font-size: 16px;\r\n  border-radius: 7px;\r\n  margin-bottom: 30px;\r\n  width: 90%;\r\n  position: relative;\r\n  background: #94c2ed;\r\n}\r\n.online {\r\n  color: #86bb71;\r\n  margin-right: 3px;\r\n  font-size: 10px;\r\n}\r\n\r\n.clearfix:after {\r\n  visibility: hidden;\r\n  display: block;\r\n  font-size: 0;\r\n  content: \" \";\r\n  clear: both;\r\n  height: 0;\r\n}\r\n", ""]);
+exports.push([module.i, "*,\r\n*:before,\r\n*:after {\r\n  box-sizing: border-box;\r\n}\r\nbody {\r\n  background: #c5ddeb;\r\n  font: 14px/20px \"Lato\", Arial, sans-serif;\r\n  padding: 40px 0;\r\n  color: white;\r\n}\r\n\r\n.container {\r\n  margin: 0 auto;\r\n  width: 750px;\r\n  background: #444753;\r\n  border-radius: 5px;\r\n}\r\n\r\n.signform {\r\n  background: #f2f5f8;\r\n  color: #434651;\r\n  width: 500px;\r\n  border-radius: 6px;\r\n  margin: 0 auto 0 auto;\r\n  padding: 0px 0px 70px 0px;\r\n  border: #2980b9 4px solid;\r\n}\r\n\r\n.room-list {\r\n  width: 260px;\r\n  float: left;\r\n}\r\n\r\n.room-list ul {\r\n  padding: 20px;\r\n  height: 770px;\r\n  list-style-type: none;\r\n}\r\n\r\n.room-list ul li {\r\n  padding-bottom: 20px;\r\n}\r\n\r\n.room-list img {\r\n  float: left;\r\n  height: 55px;\r\n  width: 55px;\r\n}\r\n.room-list .about {\r\n  float: left;\r\n  margin-top: 8px;\r\n  padding-left: 8px;\r\n}\r\n\r\n.room-list .status {\r\n  color: #92959e;\r\n}\r\n\r\n.chat {\r\n  width: 490px;\r\n  float: left;\r\n  background: #f2f5f8;\r\n  border-top-right-radius: 5px;\r\n  border-bottom-right-radius: 5px;\r\n  color: #434651;\r\n  /* height: 770px;\r\n  overflow-y: scroll; */\r\n}\r\n\r\n.chat .chat-header {\r\n  padding: 20px;\r\n  border-bottom: 2px solid white;\r\n}\r\n.chat .chat-header img {\r\n  float: left;\r\n  width: 55px;\r\n  height: 55px;\r\n}\r\n.chat .chat-header .chat-about {\r\n  float: left;\r\n  padding-left: 10px;\r\n  margin-top: 6px;\r\n}\r\n.chat .chat-header .chat-with {\r\n  font-weight: bold;\r\n  font-size: 16px;\r\n}\r\n.chat .chat-history {\r\n  padding: 30px 30px 20px;\r\n  border-bottom: 2px solid white;\r\n  overflow-y: scroll;\r\n  height: 575px;\r\n}\r\n.chat .chat-history .message-data {\r\n  margin-bottom: 15px;\r\n}\r\n.chat .chat-history .message-data-time {\r\n  color: #a8aab1;\r\n  padding-left: 6px;\r\n}\r\n.chat .chat-history .message {\r\n  color: white;\r\n  padding: 18px 20px;\r\n  line-height: 26px;\r\n  font-size: 16px;\r\n  border-radius: 7px;\r\n  margin-bottom: 30px;\r\n  width: 90%;\r\n  position: relative;\r\n  background: #86bb71;\r\n}\r\n.chat .chat-history .message:after {\r\n  bottom: 100%;\r\n  left: 7%;\r\n  border: solid transparent;\r\n  content: \" \";\r\n  height: 0;\r\n  width: 0;\r\n  position: absolute;\r\n  pointer-events: none;\r\n  border-bottom-color: #86bb71;\r\n  border-width: 10px;\r\n  margin-left: -10px;\r\n}\r\n\r\n.chat .chat-message {\r\n  padding: 30px;\r\n}\r\n.chat .chat-message textarea {\r\n  width: 100%;\r\n  border: none;\r\n  padding: 10px 20px;\r\n  font: 14px/22px \"Lato\", Arial, sans-serif;\r\n  margin-bottom: 10px;\r\n  border-radius: 5px;\r\n  resize: none;\r\n}\r\n\r\n.chat .chat-message button {\r\n  float: right;\r\n  color: #94c2ed;\r\n  font-size: 16px;\r\n  text-transform: uppercase;\r\n  border: none;\r\n  cursor: pointer;\r\n  font-weight: bold;\r\n  background: #f2f5f8;\r\n}\r\n.chat .chat-message button:hover {\r\n  color: #75b1e8;\r\n}\r\n\r\n.online {\r\n  color: #86bb71;\r\n  margin-right: 3px;\r\n  font-size: 10px;\r\n}\r\n\r\n.clearfix:after {\r\n  visibility: hidden;\r\n  display: block;\r\n  font-size: 0;\r\n  content: \" \";\r\n  clear: both;\r\n  height: 0;\r\n}\r\n", ""]);
 
 
 
@@ -38819,20 +38819,25 @@ class ChatForm extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     });
 
     _defineProperty(this, "render", () => {
-      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("form", {
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+        className: "chat-message"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("form", {
         onSubmit: this.handleSubmit
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("label", null, "Text Message"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("textarea", {
+        name: "message-to-send",
+        id: "message-to-send",
+        placeholder: "Type your message",
+        rows: "3",
         onChange: this.handleMessageChange,
-        type: "text",
         value: this.state.message
       })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("label", null, "Image Files"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
         type: "file",
         name: "images",
         onChange: this.handleImgFiles,
         multiple: true
-      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
+      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
         type: "submit"
-      }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+      }, "Send")), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
         type: "button",
         onClick: this.handleLogout
       }, "Logout"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
@@ -38844,13 +38849,16 @@ class ChatForm extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
         onChange: this.handleMessageRecipient,
         type: "text",
         value: this.state.recipient
-      }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
+      }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("textarea", {
+        name: "message-to-send",
+        id: "message-to-send",
+        placeholder: "Type your message",
+        rows: "3",
         onChange: this.handleDirectMessage,
-        type: "text",
         value: this.state.directmessage
-      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
+      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
         type: "submit"
-      })));
+      }, "Send")));
     });
 
     this.state = {
@@ -38919,12 +38927,21 @@ class UnconnectedChatMessages extends react__WEBPACK_IMPORTED_MODULE_0__["Compon
 
     _defineProperty(this, "render", () => {
       let msgToElement = (e, idx) => react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", {
-        key: e.username + idx,
+        key: e.username + idx
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+        className: "message-data"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
+        className: "message-data-name"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("i", {
+        className: "fa fa-circle online"
+      }), e.username), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
+        className: "message-data-time"
+      }, new Date(e.msgtime).toLocaleTimeString())), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
         className: "message"
-      }, e.username, " Posted at ", new Date(e.msgtime).toLocaleTimeString(), " :", e.message, e.imgs_path === undefined || e.imgs_path.length === 0 ? "" : react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
+      }, e.message, e.imgs_path === undefined || e.imgs_path.length === 0 ? "" : react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
         src: e.imgs_path[0],
         height: "100px"
-      })));
+      }))));
 
       const usertoElement = (e, idx) => react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", {
         key: e + idx
@@ -38952,7 +38969,9 @@ class UnconnectedChatMessages extends react__WEBPACK_IMPORTED_MODULE_0__["Compon
         return acc;
       }, {});
       console.log("Active users list", activeUsers);
-      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3", null, "Messages"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", null, roomMessages.map((e, idx) => {
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+        className: "chat-history"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", null, roomMessages.map((e, idx) => {
         return msgToElement(e, idx);
       })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3", null, "Direct Messages"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", null, roomdirectMessages.map((e, idx) => {
         return msgToElement(e, idx);
@@ -39008,7 +39027,16 @@ class ChatRoom extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
       if (this.props.isAdmin) console.log("this is the admin user");else console.log("this is NOT admin user");
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
         className: "chat"
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, this.props.roomName), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_ChatMessages_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+        className: "chat-header clearfix"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
+        src: "http://icons.iconarchive.com/icons/simplefly/simple-green-social-media/256/social-media-chat-icon.png",
+        alt: "avatar"
+      }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+        className: "chat-about"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+        className: "chat-with"
+      }, this.props.roomName))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_ChatMessages_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
         roomName: this.props.roomName
       }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_ChatForm_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], {
         roomName: this.props.roomName
